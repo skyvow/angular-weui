@@ -1,0 +1,36 @@
+.ng-weui-toast-forbidden .weui-toast {
+	color: #F76260;
+}
+
+.ng-weui-toast-forbidden .weui-icon_toast:before {
+	content: "\EA0B";
+	color: #F76260;
+}
+
+.ng-weui-mask-transition {
+	display: none;
+	position: fixed;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background: rgba(0, 0, 0, 0);
+	-webkit-transition: background .3s;
+	transition: background .3s;
+}
+
+.ng-weui-fade-toggle {
+	background: rgba(0, 0, 0, 0.6);
+}
+
+.weui-gallery {
+	display: block;
+	opacity: 0;
+	-webkit-transition: opacity .3s;
+	transition: opacity .3s;
+}
+
+.weui-gallery_toggle {
+	opacity: 1;
+}

@@ -1,0 +1,39 @@
+<div class="page panel js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Panel</h1>
+        <p class="page__desc">面板</p>
+    </div>
+    <div class="page__bd">
+        <!-- 图文组合列表 -->
+        <weui-panel title="图文组合列表">
+            <panel-appmsg ng-repeat="item in panelAppmsg" image="item.image" title="item.title" desc="item.desc">
+            </panel-appmsg>
+        </weui-panel>
+        
+        <!-- 文字组合列表 -->
+        <weui-panel title="文字组合列表" view-more="more()">
+            <panel-text ng-repeat="item in panelAppmsg" title="item.title" desc="item.desc">
+            </panel-text>
+        </weui-panel>
+        
+        <!-- 小图文组合列表 -->
+        <weui-panel-sm title="小图文组合列表">
+            <panel-appmsg-sm ng-repeat="item in panelAppmsg" image="item.icon" title="item.title">
+            </panel-appmsg-sm>
+        </weui-panel-sm>
+        
+        <!-- 文字列表附来源 -->
+        <weui-panel title="文字列表附来源" view-more="more()">
+            <panel-text ng-repeat="item in panelAppmsg" title="item.title" desc="item.desc">
+                <ul class="weui-media-box__info">
+                    <li class="weui-media-box__info__meta">文字来源 <span>{{item.source}}</span></li>
+                    <li class="weui-media-box__info__meta">时间 <span>{{item.time}}</span></li>
+                    <li class="weui-media-box__info__meta weui-media-box__info__meta_extra">其它信息 <span>{{item.other}}</span></li>
+                </ul>
+            </panel-text>
+        </weui-panel>
+    </div>
+    <div class="page__ft">
+        <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
+    </div>
+</div>
