@@ -3,6 +3,22 @@
 	// ng-weui-toast	
 	angular
 		.module('ng-weui-toast', [])
+		.directive('weuiToast', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-toast-wrapper">'+
+						        '<div class="weui-mask_transparent"></div>'+
+						        '<div class="weui-toast">'+
+						            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
+						            '<p class="weui-toast__content" ng-bind="text"></p>'+
+						        '</div>'+
+						    '</div>',
+			    link: function($scope, $element) {
+			    }
+			}
+		}])
 		.provider('weuiToast', function () {
 	        var defaults = this.defaults = {
 	        	type: 'default',
@@ -18,49 +34,35 @@
 	        		$body = $el(document.querySelector('body'));
 
 	        	var privateMethods = {
-	        		close: function($toast) {
-						var options = $toast.data('$ngToastOptions');
-						$timeout(function() {
-	        				$toast.remove();
-	        				angular.isFunction(options.success) && options.success();
-	        			}, options.timer)
-	        		}
+	        		
 	        	}
 
 	        	var publicMethods = {
-	        		/*
-                     * @param {Object} options:
-                     * - type {String}
-                     * - timer {Number}
-                     * - text {String}
-                     * - success {Function}
-                     *
-                     * @return {Object} toast
-                     */
-	        		message: function(opts) {
-	        			var $toast, icon;
-	        			var opts 	= opts || {};
-	        			var options = angular.extend(angular.copy(defaults), opts);
+	        		show: function(opts) {
+	        			var scope = $rootScope.$new(true);
 
-	        			$toast = $el('<div id="toast">'+
-								        '<div class="weui-mask_transparent"></div>'+
-								        '<div class="weui-toast">'+
-								            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
-								            '<p class="weui-toast__content">' + options.text + '</p>'+
-								        '</div>'+
-								    '</div>');
+						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			if(options.type == 'forbidden') {
-	        				$toast.addClass('ng-weui-toast-forbidden')
+					    var element = scope.element = $compile('<weui-toast></weui-toast>')(scope);
+
+					    if(scope.type == 'forbidden') {
+	        				element.addClass('ng-weui-toast-forbidden');
 	        			}
-	        			
-	        			$toast.data('$ngToastOptions', options);
 
-	        			$body.append($toast);
+					    $body.append(element);
 
-	        			privateMethods.close($toast);
+					    scope.remove = function(callback) {
+					    	$timeout(function() {
+		        				element.remove();
+								(callback || angular.noop)();
+		        			}, scope.timer)
+						}
 
-	        			return publicMethods;
+						scope.cancel = function() {
+							scope.remove(opts.success);
+						}
+
+						scope.cancel();
 	        		}
 	        	}
 

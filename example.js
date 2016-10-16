@@ -86,7 +86,7 @@ angular
         }
 
         $scope.showToast = function() {
-            weuiToast.message({
+            weuiToast.show({
                 type: 'default',
                 timer: 1500,
                 text: '已完成',
@@ -97,7 +97,7 @@ angular
         }
 
         $scope.showToastErr = function() {
-            weuiToast.message({
+            weuiToast.show({
                 type: 'forbidden',
                 timer: 1500,
                 text: '禁止操作',
@@ -116,21 +116,14 @@ angular
 
         $scope.openDialog1 = function() {
             weuiDialog.open({
-                type: 'confirm',
-                className: 'confirm',
+                className: 'className',
                 title: '弹窗标题',
                 text: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
-                buttons: [
-                    {
-                        text: '辅助操作',
-                    },
-                    {
-                        text: '主操作',
-                    }
-                ],
+                cancelText: '取消',
                 cancel: function(){
                     console.log('cancel')
                 },
+                confirmText: '确定',
                 confirm: function(){
                     console.log('confirm')
                 }
@@ -139,13 +132,14 @@ angular
 
         $scope.openDialog2 = function() {
             weuiDialog.open({
-                type: 'alert',
-                className: 'alert',
+                className: 'className',
                 title: '弹窗标题',
                 text: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
+                cancelText: '',
                 cancel: function(){
                     console.log('cancel')
                 },
+                confirmText: '确定',
                 confirm: function(){
                     console.log('confirm')
                 }

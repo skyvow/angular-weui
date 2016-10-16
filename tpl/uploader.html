@@ -56,7 +56,7 @@
                                 <li class="weui-uploader__file" style="background-image:url({{item}})" ng-repeat="item in vm.preview track by $index" ng-click="vm.showGallery($index, item)"></li>
                             </ul>
                             <div class="weui-uploader__input-box">
-                                <input class="weui-uploader__input" type="file" name="file" weui-file-model="vm.file" file-fn="vm.getFile()">
+                                <input class="weui-uploader__input" name="file" type="file" accept="image/jpg,image/jpeg,image/png,image/gif" weui-file-model="vm.file" file-fn="vm.getFile()">
                             </div>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                                 <li class="weui-uploader__file" style="background-image:url({{item}})" ng-repeat="item in vm.preview track by $index" ng-click="vm.showGallery($index, item)"></li>
                             </ul>
                             <div class="weui-uploader__input-box">
-                                <input class="weui-uploader__input" type="file" name="file" weui-file-model="vm.file" file-fn="vm.getFile()">
+                                <input class="weui-uploader__input" name="file" type="file" accept="image/jpg,image/jpeg,image/png,image/gif" weui-file-model="vm.file" file-fn="vm.getFile()">
                             </div>
                         </div>
                     </div>

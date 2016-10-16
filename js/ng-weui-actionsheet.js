@@ -3,6 +3,47 @@
 	// ng-weui-actionsheet	
 	angular
 		.module('ng-weui-actionsheet', [])
+		.directive('weuiActionSheet', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-action-sheet-backdrop">'+
+        						'<div class="weui-actionsheet">'+
+					                '<div class="weui-actionsheet__menu">'+
+					                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
+					                	'<div class="weui-actionsheet__cell" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
+					                '</div>'+
+					                '<div class="weui-actionsheet__action" ng-if="cancelText">'+
+					                	'<div class="weui-actionsheet__cell" ng-click="cancel()" ng-bind="cancelText"></div>'+
+					                '</div>'+
+				                '</div>'+
+			                '</div>',
+			    link: function($scope, $element) {
+					var keyUp = function(e) {
+						if (e.which == 27) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					var backdropClick = function(e) {
+						if (e.target == $element[0]) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					$scope.$on('$destroy', function() {
+						$element.remove();
+						$document.unbind('keyup', keyUp);
+					});
+
+					$document.bind('keyup', keyUp);
+					$element.bind('click', backdropClick);
+			    }
+			}
+		}])
 		.provider('weuiActionSheet', function () {
 	        var defaults = this.defaults = {
 				buttons: [],
@@ -29,40 +70,25 @@
 
 						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			var tpl =   '<div class="weui-actionsheet" id="ng_weui_actionsheet">'+
-						                '<div class="weui-actionsheet__menu">'+
-						                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
-						                	'<div class="weui-actionsheet__cell" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
-						                '</div>'+
-						                '<div class="weui-actionsheet__action" ng-if="cancelText">'+
-						                	'<div class="weui-actionsheet__cell" ng-click="cancel()" ng-bind="cancelText"></div>'+
-						                '</div>'+
-					                '</div>';
+					    var element = scope.element = $compile('<weui-action-sheet></weui-action-sheet>')(scope);
+					    var sheetEl = $el(element[0].querySelector('.weui-actionsheet'));
 
-					    var $toggle = $el(tpl);
-					    var $mask   = $el("<div class='ng-weui-mask-transition' id='ng_weui_mask_transition'></div>");
-
-					    $mask.off().on('click', function() {
-					    	scope.cancel();
-					    })
-
-					    var element = scope.element = $compile($toggle)(scope);
-					    $body.append(element).append($mask);
+					    $body.append(element);
 
 					    scope.showSheet = function(callback) {
 					    	if (scope.removed) return;
-					    	$mask.addClass('ng-weui-fade-toggle').css({'display': 'block'});
-							$toggle.addClass('weui-actionsheet_toggle');
+					    	element[0].offsetWidth;
+							element.addClass('active');
+							sheetEl.addClass('weui-actionsheet_toggle');
 					    }
 
 					    scope.removeSheet = function(callback) {
 					    	if (scope.removed) return;
 					    	scope.removed = true;
-							$mask.removeClass('ng-weui-fade-toggle').css({'display': 'none'});
-							$toggle.removeClass('weui-actionsheet_toggle');
-							$toggle.on('transitionend', function() {
-								$toggle.remove();
-								$mask.remove();
+							sheetEl.removeClass('weui-actionsheet_toggle');
+							element.removeClass('active');
+							element.on('transitionend', function() {
+								element.remove();
 								scope.cancel.$scope = element = null;
 								(callback || angular.noop)(opts.buttons);
 							})
@@ -87,8 +113,9 @@
 						scope.showSheet();
 						scope.cancel.$scope = scope;
 						return scope.cancel;
-	        		},
+	        		}
 	        	}
+	        	
 	        	return publicMethods;
 	        }]
 

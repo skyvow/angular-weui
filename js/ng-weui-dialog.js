@@ -3,22 +3,55 @@
 	// ng-weui-dialog	
 	angular
 		.module('ng-weui-dialog', [])
+		.directive('weuiDialog', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-dialog-backdrop">'+
+						        '<div class="weui-dialog">'+
+						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
+						            '<div class="weui-dialog__bd" ng-bind="text"></div>'+
+						            '<div class="weui-dialog__ft">'+
+						                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" ng-if="cancelText" ng-click="cancel()" ng-bind="cancelText"></a>'+
+						                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" ng-click="confirm()" ng-bind="confirmText"></a>'+
+						            '</div>'+
+						       '</div>'+
+						    '</div>',
+			    link: function($scope, $element) {
+					var keyUp = function(e) {
+						if (e.which == 27) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					var backdropClick = function(e) {
+						if (e.target == $element[0]) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					$scope.$on('$destroy', function() {
+						$element.remove();
+						$document.unbind('keyup', keyUp);
+					});
+
+					$document.bind('keyup', keyUp);
+					$element.bind('click', backdropClick);
+			    }
+			}
+		}])
 		.provider('weuiDialog', function () {
 	        var defaults = this.defaults = {
-	        	type: 'confirm',
 	            className: undefined,
 	            title: undefined,
 	            text: undefined,
-	            buttons: [
-	            	{
-	            		text: '取消',
-	            	},
-	            	{
-	            		text: '确定',
-	            	}
-	            ],
-	            bodyClassName: 'ngdialog-open',
+	            bodyClassName: 'ng-weui-dialog-open',
+	            cancelText: '取消',
 	            cancel: angular.noop,
+	            confirmText: '确定',
 	            confirm: angular.noop
 	        }
 
@@ -29,98 +62,56 @@
 	        		$body = $el(document.body);
 
 	        	var privateMethods = {
-	        		dialogId: 0,
-	        		closeDialog: function (event, $dialog) {
-	        			var target	   = $el(event.target),
-	        				options    = $dialog.data('$ngDialogOptions'),
-                        	isOverlay  = target.hasClass('weui-mask'),
-                        	isCloseBtn = target.hasClass('weui-dialog__btn');
 
-                        if (isOverlay || isCloseBtn) {
-                        	$body.removeClass(options.bodyClassName)
-                        	$dialog.remove()
-                         	angular.isFunction(options.cancel) && (isOverlay || target.attr('data-cancel')) && options.cancel()
-                         	angular.isFunction(options.confirm) && target.attr('data-confirm') && options.confirm()
-                        }
-                    }
 	        	}
 
 	        	var publicMethods = {
-	        		/*
-                     * @param {Object} options:
-                     * - type {String} - dialog type
-                     * - className {String} - dialog theme class
-                     * - title {String} - dialog title
-                     * - text {String} - dialog text
-                     * - cancel {Function} - dialog cancel function
-                     * - confirm {Function} - dialog confirm function
-                     * - bodyClassName {String} - class added to body at open dialog
-                     * @return {Object} dialog
-                     */
 	        		open: function(opts) {
-	        			var $dialog;
-	        			var opts = opts || {}
-	        			var options = angular.extend(angular.copy(defaults), opts);
-	        			var cancelText = options.buttons[0].text
-	        			var confirmText = options.buttons[1].text
+	        			var scope = $rootScope.$new(true);
 
-	        			if (options.type == 'confirm') {
-		        			$dialog = $el('<div class="weui_dialog_confirm">'+
-								        '<div class="weui-mask"></div>'+
-								        '<div class="weui-dialog">'+
-								            '<div class="weui-dialog__hd"><strong class="weui-dialog__title">' + options.title +'</strong></div>'+
-								            '<div class="weui-dialog__bd">' + options.text +'</div>'+
-								            '<div class="weui-dialog__ft">'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" data-cancel="2016">' + cancelText +'</a>'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" data-confirm="2016">' + confirmText + '</a>'+
-								            '</div>'+
-								       '</div>'+
-								    '</div>')
-	        			}
+						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			if (options.type == 'alert') {
-		        			$dialog = $el('<div class="weui_dialog_alert">'+
-								        '<div class="weui-mask"></div>'+
-								        '<div class="weui-dialog">'+
-								            '<div class="weui-dialog__hd"><strong class="weui-dialog__title">' + options.title +'</strong></div>'+
-								            '<div class="weui-dialog__bd">' + options.text +'</div>'+
-								            '<div class="weui-dialog__ft">'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" data-confirm="2016">' + confirmText + '</a>'+
-								            '</div>'+
-								        '</div>'+
-								    '</div>')
-	        			}
+					    var element = scope.element = $compile('<weui-dialog></weui-dialog>')(scope);
 
-	        			$dialog.data('$ngDialogOptions', options);
-	        			$body.addClass(options.bodyClassName).append($dialog)
+					    $body.addClass(scope.bodyClassName).append(element);
 
-	        			options.className && $dialog.addClass(options.className)
-	        			$dialog.attr({'id': 'weui-dialog_' + (++privateMethods.dialogId)})
+					    scope.showDialog = function(callback) {
+					    	if (scope.removed) return;
+					    	element[0].offsetWidth;
+							element.addClass('active');
+					    }
 
-	        			$dialog.on('click', function(event) {
-	        				privateMethods.closeDialog(event, $dialog)
-	        			})
+					    scope.removeDialog = function(callback) {
+					    	if (scope.removed) return;
+					    	scope.removed = true;
+							element.removeClass('active');
+							element.on('transitionend', function() {
+								element.remove();
+								scope.cancel.$scope = element = null;
+								(callback || angular.noop)();
+							})
+						}
 
-	        			return publicMethods;
-	        		},
-	        		close: function() {
-	        			var dialog  = document.getElementById('weui-dialog_' + privateMethods.dialogId),
-	        				$dialog = $el(dialog);
-	        			if (!dialog) return;
-	        			$body.removeClass('weuiDialog-open')
-	        			$dialog.remove()
-	        		},
-	        		getDefaults: function () {
-                        return defaults;
-                    }
+						scope.cancel = function() {
+							scope.removeDialog(opts.cancel);
+						}
+
+						scope.confirm = function() {
+							scope.removeDialog(opts.confirm);
+						}
+
+						scope.showDialog();
+						scope.cancel.$scope = scope;
+						return scope.cancel;
+	        		}
 	        	}
+	        	
 	        	return publicMethods
 	        }]
 
 	        this.setDefaults = function (newDefaults) {
 	            angular.extend(defaults, newDefaults);
 	        }
-
 	    })
 	
 })(); 

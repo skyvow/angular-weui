@@ -16,8 +16,8 @@
 				template:   '<div class="weui-msg">'+
 						        '<div class="weui-msg__icon-area"><i class="weui-icon_msg" ng-class="cls"></i></div>'+
 						        '<div class="weui-msg__text-area">'+
-						            '<h2 class="weui-msg__title">{{title}}</h2>'+
-						            '<p class="weui-msg__desc">{{desc}}</p>'+
+						            '<h2 class="weui-msg__title" ng-bind="title"></h2>'+
+						            '<p class="weui-msg__desc" ng-bind="desc"></p>'+
 						        '</div>'+
 						        '<div class="weui-msg__opr-area">'+
 						            '<p class="weui-btn-area">'+

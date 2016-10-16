@@ -7,8 +7,9 @@
 	color: #F76260;
 }
 
-.ng-weui-mask-transition {
-	display: none;
+.ng-weui-dialog-backdrop,
+.ng-weui-action-sheet-backdrop {
+	display: block;
 	position: fixed;
 	z-index: 1000;
 	width: 100%;
@@ -20,8 +21,19 @@
 	transition: background .3s;
 }
 
-.ng-weui-fade-toggle {
+.ng-weui-dialog-backdrop.active,
+.ng-weui-action-sheet-backdrop.active {
 	background: rgba(0, 0, 0, 0.6);
+}
+
+.ng-weui-dialog-backdrop .weui-dialog {
+	opacity: 0;
+	-webkit-transition: opacity .3s;
+	transition: opacity .3s;
+}
+
+.ng-weui-dialog-backdrop.active .weui-dialog {
+	opacity: 1;
 }
 
 .weui-gallery {

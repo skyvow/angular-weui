@@ -3,6 +3,47 @@
 	// ng-weui-actionsheet	
 	angular
 		.module('ng-weui-actionsheet', [])
+		.directive('weuiActionSheet', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-action-sheet-backdrop">'+
+        						'<div class="weui-actionsheet">'+
+					                '<div class="weui-actionsheet__menu">'+
+					                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
+					                	'<div class="weui-actionsheet__cell" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
+					                '</div>'+
+					                '<div class="weui-actionsheet__action" ng-if="cancelText">'+
+					                	'<div class="weui-actionsheet__cell" ng-click="cancel()" ng-bind="cancelText"></div>'+
+					                '</div>'+
+				                '</div>'+
+			                '</div>',
+			    link: function($scope, $element) {
+					var keyUp = function(e) {
+						if (e.which == 27) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					var backdropClick = function(e) {
+						if (e.target == $element[0]) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					$scope.$on('$destroy', function() {
+						$element.remove();
+						$document.unbind('keyup', keyUp);
+					});
+
+					$document.bind('keyup', keyUp);
+					$element.bind('click', backdropClick);
+			    }
+			}
+		}])
 		.provider('weuiActionSheet', function () {
 	        var defaults = this.defaults = {
 				buttons: [],
@@ -29,40 +70,25 @@
 
 						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			var tpl =   '<div class="weui-actionsheet" id="ng_weui_actionsheet">'+
-						                '<div class="weui-actionsheet__menu">'+
-						                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
-						                	'<div class="weui-actionsheet__cell" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
-						                '</div>'+
-						                '<div class="weui-actionsheet__action" ng-if="cancelText">'+
-						                	'<div class="weui-actionsheet__cell" ng-click="cancel()" ng-bind="cancelText"></div>'+
-						                '</div>'+
-					                '</div>';
+					    var element = scope.element = $compile('<weui-action-sheet></weui-action-sheet>')(scope);
+					    var sheetEl = $el(element[0].querySelector('.weui-actionsheet'));
 
-					    var $toggle = $el(tpl);
-					    var $mask   = $el("<div class='ng-weui-mask-transition' id='ng_weui_mask_transition'></div>");
-
-					    $mask.off().on('click', function() {
-					    	scope.cancel();
-					    })
-
-					    var element = scope.element = $compile($toggle)(scope);
-					    $body.append(element).append($mask);
+					    $body.append(element);
 
 					    scope.showSheet = function(callback) {
 					    	if (scope.removed) return;
-					    	$mask.addClass('ng-weui-fade-toggle').css({'display': 'block'});
-							$toggle.addClass('weui-actionsheet_toggle');
+					    	element[0].offsetWidth;
+							element.addClass('active');
+							sheetEl.addClass('weui-actionsheet_toggle');
 					    }
 
 					    scope.removeSheet = function(callback) {
 					    	if (scope.removed) return;
 					    	scope.removed = true;
-							$mask.removeClass('ng-weui-fade-toggle').css({'display': 'none'});
-							$toggle.removeClass('weui-actionsheet_toggle');
-							$toggle.on('transitionend', function() {
-								$toggle.remove();
-								$mask.remove();
+							sheetEl.removeClass('weui-actionsheet_toggle');
+							element.removeClass('active');
+							element.on('transitionend', function() {
+								element.remove();
 								scope.cancel.$scope = element = null;
 								(callback || angular.noop)(opts.buttons);
 							})
@@ -87,8 +113,9 @@
 						scope.showSheet();
 						scope.cancel.$scope = scope;
 						return scope.cancel;
-	        		},
+	        		}
 	        	}
+	        	
 	        	return publicMethods;
 	        }]
 
@@ -103,22 +130,55 @@
 	// ng-weui-dialog	
 	angular
 		.module('ng-weui-dialog', [])
+		.directive('weuiDialog', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-dialog-backdrop">'+
+						        '<div class="weui-dialog">'+
+						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
+						            '<div class="weui-dialog__bd" ng-bind="text"></div>'+
+						            '<div class="weui-dialog__ft">'+
+						                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" ng-if="cancelText" ng-click="cancel()" ng-bind="cancelText"></a>'+
+						                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" ng-click="confirm()" ng-bind="confirmText"></a>'+
+						            '</div>'+
+						       '</div>'+
+						    '</div>',
+			    link: function($scope, $element) {
+					var keyUp = function(e) {
+						if (e.which == 27) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					var backdropClick = function(e) {
+						if (e.target == $element[0]) {
+							$scope.cancel();
+							$scope.$apply();
+						}
+					};
+
+					$scope.$on('$destroy', function() {
+						$element.remove();
+						$document.unbind('keyup', keyUp);
+					});
+
+					$document.bind('keyup', keyUp);
+					$element.bind('click', backdropClick);
+			    }
+			}
+		}])
 		.provider('weuiDialog', function () {
 	        var defaults = this.defaults = {
-	        	type: 'confirm',
 	            className: undefined,
 	            title: undefined,
 	            text: undefined,
-	            buttons: [
-	            	{
-	            		text: '取消',
-	            	},
-	            	{
-	            		text: '确定',
-	            	}
-	            ],
-	            bodyClassName: 'ngdialog-open',
+	            bodyClassName: 'ng-weui-dialog-open',
+	            cancelText: '取消',
 	            cancel: angular.noop,
+	            confirmText: '确定',
 	            confirm: angular.noop
 	        }
 
@@ -129,98 +189,56 @@
 	        		$body = $el(document.body);
 
 	        	var privateMethods = {
-	        		dialogId: 0,
-	        		closeDialog: function (event, $dialog) {
-	        			var target	   = $el(event.target),
-	        				options    = $dialog.data('$ngDialogOptions'),
-                        	isOverlay  = target.hasClass('weui-mask'),
-                        	isCloseBtn = target.hasClass('weui-dialog__btn');
 
-                        if (isOverlay || isCloseBtn) {
-                        	$body.removeClass(options.bodyClassName)
-                        	$dialog.remove()
-                         	angular.isFunction(options.cancel) && (isOverlay || target.attr('data-cancel')) && options.cancel()
-                         	angular.isFunction(options.confirm) && target.attr('data-confirm') && options.confirm()
-                        }
-                    }
 	        	}
 
 	        	var publicMethods = {
-	        		/*
-                     * @param {Object} options:
-                     * - type {String} - dialog type
-                     * - className {String} - dialog theme class
-                     * - title {String} - dialog title
-                     * - text {String} - dialog text
-                     * - cancel {Function} - dialog cancel function
-                     * - confirm {Function} - dialog confirm function
-                     * - bodyClassName {String} - class added to body at open dialog
-                     * @return {Object} dialog
-                     */
 	        		open: function(opts) {
-	        			var $dialog;
-	        			var opts = opts || {}
-	        			var options = angular.extend(angular.copy(defaults), opts);
-	        			var cancelText = options.buttons[0].text
-	        			var confirmText = options.buttons[1].text
+	        			var scope = $rootScope.$new(true);
 
-	        			if (options.type == 'confirm') {
-		        			$dialog = $el('<div class="weui_dialog_confirm">'+
-								        '<div class="weui-mask"></div>'+
-								        '<div class="weui-dialog">'+
-								            '<div class="weui-dialog__hd"><strong class="weui-dialog__title">' + options.title +'</strong></div>'+
-								            '<div class="weui-dialog__bd">' + options.text +'</div>'+
-								            '<div class="weui-dialog__ft">'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_default" data-cancel="2016">' + cancelText +'</a>'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" data-confirm="2016">' + confirmText + '</a>'+
-								            '</div>'+
-								       '</div>'+
-								    '</div>')
-	        			}
+						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			if (options.type == 'alert') {
-		        			$dialog = $el('<div class="weui_dialog_alert">'+
-								        '<div class="weui-mask"></div>'+
-								        '<div class="weui-dialog">'+
-								            '<div class="weui-dialog__hd"><strong class="weui-dialog__title">' + options.title +'</strong></div>'+
-								            '<div class="weui-dialog__bd">' + options.text +'</div>'+
-								            '<div class="weui-dialog__ft">'+
-								                '<a href="javascript:;" class="weui-dialog__btn weui-dialog__btn_primary" data-confirm="2016">' + confirmText + '</a>'+
-								            '</div>'+
-								        '</div>'+
-								    '</div>')
-	        			}
+					    var element = scope.element = $compile('<weui-dialog></weui-dialog>')(scope);
 
-	        			$dialog.data('$ngDialogOptions', options);
-	        			$body.addClass(options.bodyClassName).append($dialog)
+					    $body.addClass(scope.bodyClassName).append(element);
 
-	        			options.className && $dialog.addClass(options.className)
-	        			$dialog.attr({'id': 'weui-dialog_' + (++privateMethods.dialogId)})
+					    scope.showDialog = function(callback) {
+					    	if (scope.removed) return;
+					    	element[0].offsetWidth;
+							element.addClass('active');
+					    }
 
-	        			$dialog.on('click', function(event) {
-	        				privateMethods.closeDialog(event, $dialog)
-	        			})
+					    scope.removeDialog = function(callback) {
+					    	if (scope.removed) return;
+					    	scope.removed = true;
+							element.removeClass('active');
+							element.on('transitionend', function() {
+								element.remove();
+								scope.cancel.$scope = element = null;
+								(callback || angular.noop)();
+							})
+						}
 
-	        			return publicMethods;
-	        		},
-	        		close: function() {
-	        			var dialog  = document.getElementById('weui-dialog_' + privateMethods.dialogId),
-	        				$dialog = $el(dialog);
-	        			if (!dialog) return;
-	        			$body.removeClass('weuiDialog-open')
-	        			$dialog.remove()
-	        		},
-	        		getDefaults: function () {
-                        return defaults;
-                    }
+						scope.cancel = function() {
+							scope.removeDialog(opts.cancel);
+						}
+
+						scope.confirm = function() {
+							scope.removeDialog(opts.confirm);
+						}
+
+						scope.showDialog();
+						scope.cancel.$scope = scope;
+						return scope.cancel;
+	        		}
 	        	}
+	        	
 	        	return publicMethods
 	        }]
 
 	        this.setDefaults = function (newDefaults) {
 	            angular.extend(defaults, newDefaults);
 	        }
-
 	    })
 	
 })(); 
@@ -359,7 +377,7 @@
 	            angular.extend(defaults, newDefaults);
 	        }
 		})
-		.directive('weuiFileModel', ['$parse', function($parse){
+		.directive('weuiFileModel', ['$parse', '$compile', function($parse, $compile){
 			return {
 				restrict: 'A',
 				link: function(scope, element, attrs, ngModel) {
@@ -372,7 +390,14 @@
 			            //附件预览
 			            scope.file = (event.srcElement || event.target).files[0];
 			            scope.$apply(attrs.fileFn);
+			            //清空文件上传域
+			            _replaceNode(element);
 			        });
+			        function _replaceNode(input) {
+			        	var clone = $compile(input.clone().val(''))(scope);
+			        	input.after(clone);
+		            	input.remove();
+			        }
 			    }
 			};
 		}])
@@ -383,6 +408,23 @@
 	// ng-weui-gallery	
 	angular
 		.module('ng-weui-gallery', [])
+		.directive('weuiGallery', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="weui-gallery">'+
+					            '<span class="weui-gallery__img" style="background-image:url({{url}})" ng-click="cancel()"></span>'+
+					            '<div class="weui-gallery__opr">'+
+					                '<a href="javascript:" class="weui-gallery__del" ng-click="delete()">'+
+					                    '<i class="weui-icon-delete weui-icon_gallery-delete"></i>'+
+					                '</a>'+
+					            '</div>'+
+					        '</div>',
+			    link: function($scope, $element) {
+			    }
+			}
+		}])
 		.provider('weuiGallery', function () {
 	        var defaults = this.defaults = {
 	        	url: undefined,
@@ -406,20 +448,13 @@
 
 	        			angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			var tpl = 	'<div class="weui-gallery">'+
-							            '<span class="weui-gallery__img" style="background-image:url({{url}})" ng-click="cancel()"></span>'+
-							            '<div class="weui-gallery__opr">'+
-							                '<a href="javascript:" class="weui-gallery__del" ng-click="delete()">'+
-							                    '<i class="weui-icon-delete weui-icon_gallery-delete"></i>'+
-							                '</a>'+
-							            '</div>'+
-							        '</div>';
-
-	        			var element = scope.element = $compile(tpl)(scope);
+	        			var element = scope.element = $compile('<weui-gallery></weui-gallery>')(scope);
+	        			
 	        			$body.append(element);
 
 	        			scope.show = function(callback) {
 					    	if (scope.removed) return;
+					    	element[0].offsetWidth;
 							element.addClass('weui-gallery_toggle');
 					    }
 
@@ -447,13 +482,13 @@
 						return scope.cancel;
 	        		}
 	        	}
+	        	
 	        	return publicMethods
 	        }]
 
 	        this.setDefaults = function (newDefaults) {
 	            angular.extend(defaults, newDefaults);
 	        }
-
 	    })
 	
 })(); 
@@ -475,8 +510,8 @@
 				template:   '<div class="weui-msg">'+
 						        '<div class="weui-msg__icon-area"><i class="weui-icon_msg" ng-class="cls"></i></div>'+
 						        '<div class="weui-msg__text-area">'+
-						            '<h2 class="weui-msg__title">{{title}}</h2>'+
-						            '<p class="weui-msg__desc">{{desc}}</p>'+
+						            '<h2 class="weui-msg__title" ng-bind="title"></h2>'+
+						            '<p class="weui-msg__desc" ng-bind="desc"></p>'+
 						        '</div>'+
 						        '<div class="weui-msg__opr-area">'+
 						            '<p class="weui-btn-area">'+
@@ -508,7 +543,7 @@
 				},
 				restrict: 'AE',
 				template:   '<div class="weui-panel weui-panel_access">'+
-								'<div class="weui-panel__hd" ng-if="!!title">{{title}}</div>'+
+								'<div class="weui-panel__hd" ng-if="!!title" ng-bind="title"></div>'+
 								'<div class="weui-panel__bd" ng-transclude></div>'+
 								'<div class="weui-panel__ft">'+
 					                '<a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" ng-if="show" ng-click="viewMore()">'+
@@ -538,8 +573,8 @@
 				                    '<img class="weui-media-box__thumb" ng-src="{{image}}" alt="">'+
 				                '</div>'+
 				                '<div class="weui-media-box__bd">'+
-				                    '<h4 class="weui-media-box__title">{{title}}</h4>'+
-				                    '<p class="weui-media-box__desc">{{desc}}</p>'+
+				                    '<h4 class="weui-media-box__title" ng-bind="title"></h4>'+
+				                    '<p class="weui-media-box__desc" ng-bind="desc"></p>'+
 				                '</div>'+
 				            '</a>',
 				replace: true
@@ -555,8 +590,8 @@
 				require: '^?weuiPanel',
 				restrict: 'E',
 				template:   '<div class="weui-media-box weui-media-box_text">'+
-				                '<h4 class="weui-media-box__title">{{title}}</h4>'+
-				                '<p class="weui-media-box__desc">{{desc}}</p>'+
+				                '<h4 class="weui-media-box__title" ng-bind="title"></h4>'+
+				                '<p class="weui-media-box__desc" ng-bind="desc"></p>'+
 				                '<div ng-transclude></div>'+
 				            '</div>',
 				replace: true,
@@ -570,7 +605,7 @@
 				},
 				restrict: 'AE',
 				template:   '<div class="weui-panel">'+
-								'<div class="weui-panel__hd" ng-if="!!title">{{title}}</div>'+
+								'<div class="weui-panel__hd" ng-if="!!title" ng-bind="title"></div>'+
 								'<div class="weui-panel__bd">'+
 									'<div class="weui-media-box weui-media-box_small-appmsg">'+
 						                '<div class="weui-cells" ng-transclude>'+
@@ -593,7 +628,7 @@
 				template:   '<a class="weui-cell weui-cell_access" href="javascript:;">'+
 		                        '<div class="weui-cell__hd" ng-if="!!image"><img ng-src="{{image}}" alt="" style="width:20px;margin-right:5px;display:block"></div>'+
 		                        '<div class="weui-cell__bd weui-cell_primary">'+
-		                            '<p>{{title}}</p>'+
+		                            '<p ng-bind="title"></p>'+
 		                        '</div>'+
 		                        '<span class="weui-cell__ft"></span>'+
 		                    '</a>',
@@ -607,6 +642,22 @@
 	// ng-weui-toast	
 	angular
 		.module('ng-weui-toast', [])
+		.directive('weuiToast', ['$document', function($document) {
+			 return {
+			    restrict: 'E',
+			    scope: true,
+			    replace: true,
+			    template: 	'<div class="ng-weui-toast-wrapper">'+
+						        '<div class="weui-mask_transparent"></div>'+
+						        '<div class="weui-toast">'+
+						            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
+						            '<p class="weui-toast__content" ng-bind="text"></p>'+
+						        '</div>'+
+						    '</div>',
+			    link: function($scope, $element) {
+			    }
+			}
+		}])
 		.provider('weuiToast', function () {
 	        var defaults = this.defaults = {
 	        	type: 'default',
@@ -622,49 +673,35 @@
 	        		$body = $el(document.querySelector('body'));
 
 	        	var privateMethods = {
-	        		close: function($toast) {
-						var options = $toast.data('$ngToastOptions');
-						$timeout(function() {
-	        				$toast.remove();
-	        				angular.isFunction(options.success) && options.success();
-	        			}, options.timer)
-	        		}
+	        		
 	        	}
 
 	        	var publicMethods = {
-	        		/*
-                     * @param {Object} options:
-                     * - type {String}
-                     * - timer {Number}
-                     * - text {String}
-                     * - success {Function}
-                     *
-                     * @return {Object} toast
-                     */
-	        		message: function(opts) {
-	        			var $toast, icon;
-	        			var opts 	= opts || {};
-	        			var options = angular.extend(angular.copy(defaults), opts);
+	        		show: function(opts) {
+	        			var scope = $rootScope.$new(true);
 
-	        			$toast = $el('<div id="toast">'+
-								        '<div class="weui-mask_transparent"></div>'+
-								        '<div class="weui-toast">'+
-								            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
-								            '<p class="weui-toast__content">' + options.text + '</p>'+
-								        '</div>'+
-								    '</div>');
+						angular.extend(scope, angular.copy(defaults), opts || {});
 
-	        			if(options.type == 'forbidden') {
-	        				$toast.addClass('ng-weui-toast-forbidden')
+					    var element = scope.element = $compile('<weui-toast></weui-toast>')(scope);
+
+					    if(scope.type == 'forbidden') {
+	        				element.addClass('ng-weui-toast-forbidden');
 	        			}
-	        			
-	        			$toast.data('$ngToastOptions', options);
 
-	        			$body.append($toast);
+					    $body.append(element);
 
-	        			privateMethods.close($toast);
+					    scope.remove = function(callback) {
+					    	$timeout(function() {
+		        				element.remove();
+								(callback || angular.noop)();
+		        			}, scope.timer)
+						}
 
-	        			return publicMethods;
+						scope.cancel = function() {
+							scope.remove(opts.success);
+						}
+
+						scope.cancel();
 	        		}
 	        	}
 

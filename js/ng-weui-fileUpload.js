@@ -133,7 +133,7 @@
 	            angular.extend(defaults, newDefaults);
 	        }
 		})
-		.directive('weuiFileModel', ['$parse', function($parse){
+		.directive('weuiFileModel', ['$parse', '$compile', function($parse, $compile){
 			return {
 				restrict: 'A',
 				link: function(scope, element, attrs, ngModel) {
@@ -146,7 +146,14 @@
 			            //附件预览
 			            scope.file = (event.srcElement || event.target).files[0];
 			            scope.$apply(attrs.fileFn);
+			            //清空文件上传域
+			            _replaceNode(element);
 			        });
+			        function _replaceNode(input) {
+			        	var clone = $compile(input.clone().val(''))(scope);
+			        	input.after(clone);
+		            	input.remove();
+			        }
 			    }
 			};
 		}])
