@@ -12,7 +12,7 @@
         						'<div class="weui-actionsheet">'+
 					                '<div class="weui-actionsheet__menu">'+
 					                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
-					                	'<div class="weui-actionsheet__cell" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
+					                	'<div class="weui-actionsheet__cell destructive action-sheet-destructive" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
 					                '</div>'+
 					                '<div class="weui-actionsheet__action" ng-if="cancelText">'+
 					                	'<div class="weui-actionsheet__cell" ng-click="cancel()" ng-bind="cancelText"></div>'+
@@ -44,7 +44,7 @@
 			    }
 			}
 		}])
-		.provider('weuiActionSheet', function () {
+		.provider('$weuiActionSheet', function () {
 	        var defaults = this.defaults = {
 				buttons: [],
 				buttonClicked: angular.noop,
@@ -56,9 +56,12 @@
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
             function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
-	        	var self  = this,
-					$el   = angular.element,
-					$body = $el(document.body);
+	        	var self   = this,
+					$el    = angular.element,
+					$body  = $el(document.body),
+					extend = angular.extend,
+					noop   = angular.noop,
+					copy   = angular.copy;
 
 	        	var privateMethods = {
 
@@ -68,7 +71,7 @@
 	        		show: function(opts) {
 						var scope = $rootScope.$new(true);
 
-						angular.extend(scope, angular.copy(defaults), opts || {});
+						extend(scope, copy(defaults), opts || {});
 
 					    var element = scope.element = $compile('<weui-action-sheet></weui-action-sheet>')(scope);
 					    var sheetEl = $el(element[0].querySelector('.weui-actionsheet'));
@@ -90,7 +93,7 @@
 							element.on('transitionend', function() {
 								element.remove();
 								scope.cancel.$scope = element = null;
-								(callback || angular.noop)(opts.buttons);
+								(callback || noop)(opts.buttons);
 							})
 						}
 

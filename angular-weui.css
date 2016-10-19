@@ -7,6 +7,11 @@
 	color: #F76260;
 }
 
+.weui-actionsheet .weui-actionsheet__cell.destructive, 
+.weui-actionsheet .weui-actionsheet__cell.destructive:hover {
+    color: #ff3b30;
+}
+
 .ng-weui-dialog-backdrop,
 .ng-weui-action-sheet-backdrop {
 	display: block;
@@ -34,6 +39,16 @@
 
 .ng-weui-dialog-backdrop.active .weui-dialog {
 	opacity: 1;
+}
+
+.ng-weui-loading.hidden {
+	display: none;
+	visibility: hidden;
+}
+
+.ng-weui-loading.visible {
+	display: block;
+	visibility: visible;
 }
 
 .weui-gallery {

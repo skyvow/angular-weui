@@ -20,7 +20,7 @@
 			    }
 			}
 		}])
-		.provider('weuiGallery', function () {
+		.provider('$weuiGallery', function () {
 	        var defaults = this.defaults = {
 	        	url: undefined,
 	        	cancel: angular.noop,
@@ -29,9 +29,12 @@
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
             function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
-	        	var self  = this,
-	        		$el   = angular.element,
-	        		$body = $el(document.body);
+	        	var self   = this,
+					$el    = angular.element,
+					$body  = $el(document.body),
+					extend = angular.extend,
+					noop   = angular.noop,
+					copy   = angular.copy;
 
 	        	var privateMethods = {
 	        		
@@ -41,7 +44,7 @@
 	        		show: function(opts) {
 	        			var scope = $rootScope.$new(true);
 
-	        			angular.extend(scope, angular.copy(defaults), opts || {});
+	        			extend(scope, copy(defaults), opts || {});
 
 	        			var element = scope.element = $compile('<weui-gallery></weui-gallery>')(scope);
 	        			
@@ -60,7 +63,7 @@
 							element.on('transitionend', function() {
 								element.remove();
 								scope.cancel.$scope = element = null;
-								(callback || angular.noop)(opts.url);
+								(callback || noop)(opts.url);
 							})
 						}
 

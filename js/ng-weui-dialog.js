@@ -43,7 +43,7 @@
 			    }
 			}
 		}])
-		.provider('weuiDialog', function () {
+		.provider('$weuiDialog', function () {
 	        var defaults = this.defaults = {
 	            className: undefined,
 	            title: undefined,
@@ -57,9 +57,12 @@
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
             function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
-	        	var self  = this,
-	        		$el   = angular.element,
-	        		$body = $el(document.body);
+	        	var self   = this,
+					$el    = angular.element,
+					$body  = $el(document.body),
+					extend = angular.extend,
+					noop   = angular.noop,
+					copy   = angular.copy;
 
 	        	var privateMethods = {
 
@@ -69,7 +72,7 @@
 	        		open: function(opts) {
 	        			var scope = $rootScope.$new(true);
 
-						angular.extend(scope, angular.copy(defaults), opts || {});
+						extend(scope, copy(defaults), opts || {});
 
 					    var element = scope.element = $compile('<weui-dialog></weui-dialog>')(scope);
 
@@ -88,7 +91,7 @@
 							element.on('transitionend', function() {
 								element.remove();
 								scope.cancel.$scope = element = null;
-								(callback || angular.noop)();
+								(callback || noop)();
 							})
 						}
 

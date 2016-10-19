@@ -4,10 +4,10 @@ var qpic  = 'http://shp.qpic.cn/weixinsrc_pic/pScBR7sbqjOBJomcuvVJ6iacVrbMJaoJZk
 
 angular
 	.module('weui', ['ng-weui','ui.router'])
-	.config(function($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider) {
+	.config(function($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider, $weuiPopupProvider, $weuiLoadingProvider) {
 
     	//set router
-    	$urlRouterProvider.otherwise("/index");
+    	$urlRouterProvider.otherwise('/index');
 
         var tpls = [
             'index', 
@@ -29,6 +29,7 @@ angular
 
             'actionsheet', 
             'dialog', 
+            'popup', 
             'msg', 
             'msg_success', 
             'msg_warn', 
@@ -48,9 +49,22 @@ angular
                 templateUrl: 'tpl/' + value + '.html', 
             })
         })
+
+        // $weuiPopupProvider.setDefaults({
+        //     cancelText: 'cancel',
+        //     cancelType: 'weui-dialog__btn_default',
+        //     okText: 'ok',
+        //     okType: 'weui-dialog__btn_primary'
+        // })
+        
+        // $weuiLoadingProvider.setDefaults({
+        //     template: '正在载入数据，请稍后...',
+        //     templateUrl: null,
+        //     hideOnStateChange: false
+        // })
     })
 	
-	.controller('ExampleCtrl', function($scope, $timeout, $state, weuiToast, weuiDialog, weuiActionSheet, weuiGallery, weuiFileReader){
+	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup){
         $scope.panelAppmsg = [
             {
                 image: image,
@@ -86,7 +100,7 @@ angular
         }
 
         $scope.showToast = function() {
-            weuiToast.show({
+            $weuiToast.show({
                 type: 'default',
                 timer: 1500,
                 text: '已完成',
@@ -97,7 +111,7 @@ angular
         }
 
         $scope.showToastErr = function() {
-            weuiToast.show({
+            $weuiToast.show({
                 type: 'forbidden',
                 timer: 1500,
                 text: '禁止操作',
@@ -108,16 +122,20 @@ angular
         }
 
         $scope.showLoadingToast = function() {
-            $scope.loadingToast = !0
+            $weuiLoading.show({
+                template: '数据加载中',
+                templateUrl: null,
+                hideOnStateChange: false
+            })
             $timeout(function() {
-                $scope.loadingToast = !1
+                $weuiLoading.hide()
             }, 1500)
         }
 
         $scope.openDialog1 = function() {
-            weuiDialog.open({
+            var hideDialog = $weuiDialog.open({
                 className: 'className',
-                title: '弹窗标题',
+                title: '延迟3秒后自动关闭',
                 text: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
                 cancelText: '取消',
                 cancel: function(){
@@ -128,10 +146,14 @@ angular
                     console.log('confirm')
                 }
             })
+
+            $timeout(function() {
+                hideDialog()
+            }, 3000)
         }
 
         $scope.openDialog2 = function() {
-            weuiDialog.open({
+            $weuiDialog.open({
                 className: 'className',
                 title: '弹窗标题',
                 text: '弹窗内容，告知当前状态、信息和解决方法，描述文字尽量控制在三行内',
@@ -146,8 +168,106 @@ angular
             })
         }
 
+        $scope.showPopupTpl = function() {
+            var hidePopup = $weuiPopup.show({
+                className: 'className',
+                templateUrl: 'tpl/common.html',
+                title: '延迟3秒后自动关闭',
+                scope: $scope,
+                buttons: [
+                    { 
+                        text: '取消', 
+                        onTap: function(e) {
+                            console.log('cancel')
+                        }
+                    },
+                    {
+                        text: '确定',
+                        type: 'weui-dialog__btn_primary',
+                        onTap: function(e) {
+                            console.log('confirm')
+                        }
+                    }
+                ]
+            })
+
+            hidePopup.then(function(res) {
+                console.log(res) 
+            })
+
+            $timeout(function() {
+                hidePopup.close()
+            }, 3000)
+        }
+
+        $scope.showPopup = function() {
+            $scope.data = {}
+            $weuiPopup.show({
+                className: 'className',
+                template: '<input class="weui-input" type="password" placeholder="请输入Wi-Fi密码" ng-model="data.wifi">',
+                title: '请输入Wi-Fi密码',
+                scope: $scope,
+                buttons: [
+                    { 
+                        text: '取消', 
+                        onTap: function(e) {
+                            console.log('cancel')
+                        }
+                    },
+                    {
+                        text: '确定',
+                        type: 'weui-dialog__btn_primary',
+                        onTap: function(e) {
+                            console.log('confirm')
+                            return $scope.data.wifi
+                        }
+                    }
+                ]
+            })
+            .then(function(res) {
+                console.log('Wi-Fi密码到手了:', res)  
+            })
+        }
+
+        $scope.showAlert = function() {
+            $weuiPopup.alert({
+                title: '不要吃果冻',
+                template: '它们可能是用旧的皮鞋帮做的！'
+            })
+            .then(function(res) {
+                console.log('感谢上帝，你没吃鞋帮！')
+            })
+        }
+
+        $scope.showConfirm = function() {
+            $weuiPopup.confirm({
+                title: '定制冰激凌',
+                template: '你确定要吃我的冰淇淋吗？'
+            })
+            .then(function(res) {
+                if(res) {
+                    console.log('凭什么吃我的冰淇淋！')
+                } else {
+                    console.log('谢谢你不吃之恩！')
+                }
+            })
+        }
+
+        $scope.showPrompt = function() {
+            $weuiPopup.prompt({
+                title: '请输入你的姓名',
+                inputType: 'text',
+                defaultText: '',
+                inputPlaceholder: '请输入你的姓名',
+                maxLength: 20,
+            })
+            .then(function(res) {
+                console.log(res)
+            })
+        }
+
         $scope.showActionSheet = function() {
-            var hideSheet = weuiActionSheet.show({
+            var hideSheet = $weuiActionSheet.show({
                 buttons: [
                     {
                         text: '示例菜单',
@@ -193,7 +313,7 @@ angular
         $scope.images = ['images/pic_160.png', 'images/pic_160.png', 'images/pic_160.png']
 
         $scope.showGallery = function() {
-            var hideGallery = weuiGallery.show({
+            var hideGallery = $weuiGallery.show({
                 url: 'images/pic_160.png',
                 cancel: function() {
                     console.log('cancel')
@@ -209,12 +329,12 @@ angular
             // }, 2000);
         }
 	})
-    .controller('weuiFileReader', function($scope, weuiGallery, weuiFileReader){
+    .controller('weuiFileReader', function($scope, $weuiGallery, $weuiFileReader){
         var self = this
         self.preview = []
         self.getFile = function() {
             console.log('原图', self.file)
-            weuiFileReader.readAsDataUrl(self.file, $scope)
+            $weuiFileReader.readAsDataUrl(self.file, $scope)
             .then(function(data){
                 self.preview.push(data)
                 var json = {}
@@ -223,7 +343,7 @@ angular
             })
         }
         self.showGallery = function(index, url) {
-            weuiGallery.show({
+            $weuiGallery.show({
                 url: url,
                 cancel: function() {
                     console.log('cancel')
@@ -236,19 +356,19 @@ angular
             })
         }
     })
-    .controller('weuiFileOptimization', function($scope, weuiGallery, weuiFileOptimization){
+    .controller('weuiFileOptimization', function($scope, $weuiGallery, $weuiFileOptimization){
         var self = this
         self.preview = []
         self.getFile = function() {
             console.log('原图', self.file)
-            weuiFileOptimization.resizeFile(self.file)
+            $weuiFileOptimization.resizeFile(self.file)
             .then(function(data){
                 self.preview.push(data.base64)
                 console.log('Canvas 压缩', data)
             })
         }
         self.showGallery = function(index, url) {
-            weuiGallery.show({
+            $weuiGallery.show({
                 url: url,
                 cancel: function() {
                     console.log('cancel')

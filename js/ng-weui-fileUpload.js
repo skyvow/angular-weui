@@ -3,7 +3,7 @@
 	// ng-weui-fileUpload	
 	angular
 		.module('ng-weui-fileUpload', [])
-		.factory('weuiFileReader', ['$q', function ($q) {
+		.factory('$weuiFileReader', ['$q', function ($q) {
 	        var onLoad = function(reader, deferred, scope) {
 		        return function () {
 		            scope.$apply(function () {
@@ -38,7 +38,7 @@
 		        readAsDataUrl: readAsDataURL  
 		    };
 	    }])
-		.provider('weuiFileOptimization', function () {
+		.provider('$weuiFileOptimization', function () {
 			var defaults = this.defaults = {
 	        	maxWidth: 640,
 	            maxHeight: 640,

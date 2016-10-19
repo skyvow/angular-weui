@@ -28,8 +28,11 @@
 			'ng-weui-dialog', 
 			'ng-weui-fileUpload', 
 			'ng-weui-gallery', 
+			'ng-weui-loading', 
 			'ng-weui-msg', 
 			'ng-weui-panel', 
+			'ng-weui-popup', 
+			'ng-weui-templateLoader', 
 			'ng-weui-toast', 
 		])
 

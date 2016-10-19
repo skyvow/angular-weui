@@ -19,7 +19,7 @@
 			    }
 			}
 		}])
-		.provider('weuiToast', function () {
+		.provider('$weuiToast', function () {
 	        var defaults = this.defaults = {
 	        	type: 'default',
 	        	timer: 1500,
@@ -29,9 +29,12 @@
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
             function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
-	        	var self  = this,
-	        		$el   = angular.element,
-	        		$body = $el(document.querySelector('body'));
+	        	var self   = this,
+					$el    = angular.element,
+					$body  = $el(document.body),
+					extend = angular.extend,
+					noop   = angular.noop,
+					copy   = angular.copy;
 
 	        	var privateMethods = {
 	        		
@@ -41,7 +44,7 @@
 	        		show: function(opts) {
 	        			var scope = $rootScope.$new(true);
 
-						angular.extend(scope, angular.copy(defaults), opts || {});
+						extend(scope, copy(defaults), opts || {});
 
 					    var element = scope.element = $compile('<weui-toast></weui-toast>')(scope);
 
@@ -54,7 +57,7 @@
 					    scope.remove = function(callback) {
 					    	$timeout(function() {
 		        				element.remove();
-								(callback || angular.noop)();
+								(callback || noop)();
 		        			}, scope.timer)
 						}
 
