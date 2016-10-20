@@ -8,8 +8,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-loading hidden">'+
-						        '<div class="weui-mask_transparent"></div>'+
+			    template: 	'<div class="ng-weui-loading-wrapper hidden">'+
 						        '<div class="weui-toast">'+
 						            '<i class="weui-loading weui-icon_toast"></i>'+
 						            '<p class="weui-toast__content"></p>'+
@@ -23,11 +22,12 @@
 	        var defaults = this.defaults = {
 				template: '数据加载中',
 				templateUrl: null,
+				noBackdrop: true,
 				hideOnStateChange: false
 	        }
 
-	        this.$get = ['$document', '$weuiTemplateLoader', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $weuiTemplateLoader, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$weuiTemplateLoader', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $weuiTemplateLoader, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -49,6 +49,14 @@
 
 									self.scope = options.scope || self.scope;
 
+									if (!self.isShown) {
+										self.hasBackdrop = !options.noBackdrop;
+										if (self.hasBackdrop) {
+											$weuiBackdrop.retain();
+											$weuiBackdrop.getElement().addClass('backdrop-loading');
+										}
+									}
+
 									templatePromise.then(function(html) {
 										if (html) {
 											var loading = $el(self.element[0].querySelector('.weui-toast__content'));
@@ -58,6 +66,8 @@
 
 										if (self.isShown) {
 											self.element.addClass('visible');
+											self.element[0].offsetWidth;
+											self.element.addClass('active');
 											$body.addClass('ng-weui-loading-active');
 										}
 									});
@@ -67,8 +77,13 @@
 
 								self.hide = function() {
 									if (self.isShown) {
-										self.element.removeClass('visible');
+										if (self.hasBackdrop) {
+											$weuiBackdrop.release();
+											$weuiBackdrop.getElement().removeClass('backdrop-loading');
+										}
+										self.element.removeClass('active');
 										$body.removeClass('ng-weui-loading-active');
+										self.element.removeClass('visible');
 									}
 
 									self.isShown = false;

@@ -12,7 +12,6 @@
     color: #ff3b30;
 }
 
-.ng-weui-dialog-backdrop,
 .ng-weui-action-sheet-backdrop {
 	display: block;
 	position: fixed;
@@ -26,29 +25,70 @@
 	transition: background .3s;
 }
 
-.ng-weui-dialog-backdrop.active,
 .ng-weui-action-sheet-backdrop.active {
 	background: rgba(0, 0, 0, 0.6);
 }
 
-.ng-weui-dialog-backdrop .weui-dialog {
+.ng-weui-dialog-wrapper.hidden {
+	visibility: hidden;
+}
+
+.ng-weui-dialog-wrapper.visible {
+	visibility: visible;
+}
+
+.ng-weui-dialog-wrapper .weui-dialog {
 	opacity: 0;
 	-webkit-transition: opacity .3s;
 	transition: opacity .3s;
 }
 
-.ng-weui-dialog-backdrop.active .weui-dialog {
+.ng-weui-dialog-wrapper.active .weui-dialog {
 	opacity: 1;
 }
 
-.ng-weui-loading.hidden {
-	display: none;
-	visibility: hidden;
+.ng-weui-loading-wrapper, 
+.ng-weui-toast-wrapper {
+	position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1010;
+    display: block;
+    -webkit-transition: .2s opacity linear;
+    transition: .2s opacity linear;
 }
 
-.ng-weui-loading.visible {
-	display: block;
+.ng-weui-loading-wrapper.hidden, 
+.ng-weui-toast-wrapper.hidden {
+	visibility: hidden;
+    opacity: 0;
+}
+
+.ng-weui-loading-wrapper.visible, 
+.ng-weui-toast-wrapper.visible {
 	visibility: visible;
+}
+
+.ng-weui-loading-wrapper.active, 
+.ng-weui-toast-wrapper.active {
+	opacity: 1;
+}
+
+.weui-mask.hidden {
+	visibility: hidden;
+    opacity: 0;
+    -webkit-transition: .2s opacity linear;
+    transition: .2s opacity linear;
+}
+
+.weui-mask.visible {
+    visibility: visible;
+}
+
+.weui-mask.active {
+    opacity: 1;
 }
 
 .weui-gallery {

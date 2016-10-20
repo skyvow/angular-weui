@@ -51,7 +51,8 @@
 				cancelText: '取消',
 				cancel: angular.noop,
 				// destructiveText: '删除',
-				// destructiveButtonClicked: angular.noop
+				// destructiveButtonClicked: angular.noop,
+				cancelOnStateChange: true
 	        }
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
@@ -76,6 +77,8 @@
 					    var element = scope.element = $compile('<weui-action-sheet></weui-action-sheet>')(scope);
 					    var sheetEl = $el(element[0].querySelector('.weui-actionsheet'));
 
+					    var stateChangeListenDone = scope.cancelOnStateChange ? $rootScope.$on('$stateChangeSuccess', function() { scope.cancel(); }) : noop;
+
 					    $body.append(element);
 
 					    scope.showSheet = function(callback) {
@@ -90,6 +93,7 @@
 					    	scope.removed = true;
 							sheetEl.removeClass('weui-actionsheet_toggle');
 							element.removeClass('active');
+							stateChangeListenDone();
 							element.on('transitionend', function() {
 								element.remove();
 								scope.cancel.$scope = element = null;
@@ -130,6 +134,62 @@
 })(); 
 (function() {
 
+	// ng-weui-backdrop	
+	angular
+		.module('ng-weui-backdrop', [])
+		.provider('$weuiBackdrop', function () {
+	        this.$get = ['$document', '$timeout', '$$rAF', '$rootScope', 
+            function ($document, $timeout, $$rAF, $rootScope) {
+	        	var self   = this,
+					$el    = angular.element,
+					$body  = $el(document.body),
+					extend = angular.extend,
+					noop   = angular.noop,
+					copy   = angular.copy;
+
+	        	var privateMethods = {
+	        		backdropHolds: 0,
+	        		_el: $el('<div class="weui-mask hidden"></div>'),
+	        		_init: function() {
+	        			$body.append(privateMethods._el)
+	        		}
+	        	}
+
+	        	var publicMethods = {
+	        		getElement: function() {
+	        			return privateMethods._el
+	        		},
+	        		retain: function() {
+						privateMethods.backdropHolds++;
+						if (privateMethods.backdropHolds === 1) {
+							privateMethods._el.addClass('visible');
+							$rootScope.$broadcast('backdrop.shown');
+							$$rAF(function() {
+								if (privateMethods.backdropHolds >= 1) privateMethods._el.addClass('active');
+							});
+						}
+	        		},
+	        		release: function() {
+						if (privateMethods.backdropHolds === 1) {
+							privateMethods._el.removeClass('active');
+							$rootScope.$broadcast('backdrop.hidden');
+							$timeout(function() {
+								if (privateMethods.backdropHolds === 0) privateMethods._el.removeClass('visible');
+							}, 400, false);
+						}
+						privateMethods.backdropHolds = Math.max(0, privateMethods.backdropHolds - 1);
+	        		}
+	        	}
+
+	        	privateMethods._init();
+	        	
+	        	return publicMethods;
+	        }]
+	    })
+	
+})(); 
+(function() {
+
 	// ng-weui-dialog	
 	angular
 		.module('ng-weui-dialog', [])
@@ -138,7 +198,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-dialog-backdrop">'+
+			    template: 	'<div class="ng-weui-dialog-wrapper hidden">'+
 						        '<div class="weui-dialog">'+
 						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
 						            '<div class="weui-dialog__bd" ng-bind="text"></div>'+
@@ -156,20 +216,12 @@
 						}
 					};
 
-					var backdropClick = function(e) {
-						if (e.target == $element[0]) {
-							$scope.cancel();
-							$scope.$apply();
-						}
-					};
-
 					$scope.$on('$destroy', function() {
 						$element.remove();
 						$document.unbind('keyup', keyUp);
 					});
 
 					$document.bind('keyup', keyUp);
-					$element.bind('click', backdropClick);
 			    }
 			}
 		}])
@@ -185,8 +237,8 @@
 	            confirm: angular.noop
 	        }
 
-	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -210,6 +262,15 @@
 
 					    scope.showDialog = function(callback) {
 					    	if (scope.removed) return;
+					    	$weuiBackdrop.retain();
+					    	var $backdrop = $weuiBackdrop.getElement()
+					    	$backdrop.addClass('backdrop-dialog');
+					    	$backdrop.off().on('click', function(e) {
+					    		if ($backdrop.hasClass('backdrop-dialog')) {
+					    			scope.cancel()
+					    		}
+					    	})
+							element.addClass('visible');
 					    	element[0].offsetWidth;
 							element.addClass('active');
 					    }
@@ -217,9 +278,12 @@
 					    scope.removeDialog = function(callback) {
 					    	if (scope.removed) return;
 					    	scope.removed = true;
+					    	$weuiBackdrop.release()
+					    	$weuiBackdrop.getElement().removeClass('backdrop-dialog')
 							element.removeClass('active');
 							element.on('transitionend', function() {
 								element.remove();
+								scope.$destroy();
 								scope.cancel.$scope = element = null;
 								(callback || noop)();
 							})
@@ -511,8 +575,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-loading hidden">'+
-						        '<div class="weui-mask_transparent"></div>'+
+			    template: 	'<div class="ng-weui-loading-wrapper hidden">'+
 						        '<div class="weui-toast">'+
 						            '<i class="weui-loading weui-icon_toast"></i>'+
 						            '<p class="weui-toast__content"></p>'+
@@ -526,11 +589,12 @@
 	        var defaults = this.defaults = {
 				template: '数据加载中',
 				templateUrl: null,
+				noBackdrop: true,
 				hideOnStateChange: false
 	        }
 
-	        this.$get = ['$document', '$weuiTemplateLoader', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $weuiTemplateLoader, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$weuiTemplateLoader', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $weuiTemplateLoader, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -552,6 +616,14 @@
 
 									self.scope = options.scope || self.scope;
 
+									if (!self.isShown) {
+										self.hasBackdrop = !options.noBackdrop;
+										if (self.hasBackdrop) {
+											$weuiBackdrop.retain();
+											$weuiBackdrop.getElement().addClass('backdrop-loading');
+										}
+									}
+
 									templatePromise.then(function(html) {
 										if (html) {
 											var loading = $el(self.element[0].querySelector('.weui-toast__content'));
@@ -561,6 +633,8 @@
 
 										if (self.isShown) {
 											self.element.addClass('visible');
+											self.element[0].offsetWidth;
+											self.element.addClass('active');
 											$body.addClass('ng-weui-loading-active');
 										}
 									});
@@ -570,8 +644,13 @@
 
 								self.hide = function() {
 									if (self.isShown) {
-										self.element.removeClass('visible');
+										if (self.hasBackdrop) {
+											$weuiBackdrop.release();
+											$weuiBackdrop.getElement().removeClass('backdrop-loading');
+										}
+										self.element.removeClass('active');
 										$body.removeClass('ng-weui-loading-active');
+										self.element.removeClass('visible');
 									}
 
 									self.isShown = false;
@@ -772,7 +851,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-dialog-backdrop" ng-class="className">'+
+			    template: 	'<div class="ng-weui-dialog-wrapper hidden" ng-class="className">'+
 						        '<div class="weui-dialog">'+
 						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
 						            '<div class="weui-dialog__bd"></div>'+
@@ -790,21 +869,12 @@
 						}
 					};
 
-					var backdropClick = function(e) {
-						if (e.target == $element[0]) {
-							var $popup = $element.data('$ngWeuiPopup')
-							$popup.responseDeferred.promise.close();
-							$scope.$apply();
-						}
-					};
-
 					$scope.$on('$destroy', function() {
 						$element.remove();
 						$document.unbind('keyup', keyUp);
 					});
 
 					$document.bind('keyup', keyUp);
-					$element.bind('click', backdropClick);
 			    }
 			}
 		}])
@@ -816,8 +886,8 @@
 	        	okType: 'weui-dialog__btn_primary'
 	        }
 
-	        this.$get = ['$q', '$timeout', '$rootScope', '$compile', '$weuiTemplateLoader', 
-            function ($q, $timeout, $rootScope, $compile, $weuiTemplateLoader) {
+	        this.$get = ['$q', '$timeout', '$rootScope', '$compile', '$weuiTemplateLoader', '$weuiBackdrop', 
+            function ($q, $timeout, $rootScope, $compile, $weuiTemplateLoader, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -830,6 +900,15 @@
 				}
 
 				var popupStack = [];
+
+				var privateMethods = {
+					focusInput: function(element) {
+						var focusOn = element[0].querySelector('[autofocus]');
+						if (focusOn) {
+							focusOn.focus();
+						}
+					}
+				}
 
 	        	var publicMethods = {
 					show        : showPopup,
@@ -891,7 +970,8 @@
 						if (!self.isShown) return;
 						$body.append(self.element);
 						self.element[0].offsetWidth;
-						self.element.addClass('active');
+						self.element.addClass('visible active');
+						privateMethods.focusInput(self.element);
 					};
 
 					self.hide = function(callback) {
@@ -927,6 +1007,14 @@
 						$timeout(popupStack[popupStack.length - 1].hide, showDelay, false);
 					} else {
 						$body.addClass('ng-weui-popup-open');
+						$weuiBackdrop.retain();
+				    	var $backdrop = $weuiBackdrop.getElement();
+				    	$backdrop.addClass('backdrop-popup');
+				    	$backdrop.off().on('click', function(e) {
+				    		if ($backdrop.hasClass('backdrop-popup')) {
+				    			popup.responseDeferred.promise.close();
+				    		}
+				    	})
 					}
 
 					popup.responseDeferred.promise.close = function popupClose(result) {
@@ -953,6 +1041,9 @@
 							if (popupStack.length > 0) {
 								popupStack[popupStack.length - 1].show();
 							} else {
+								$weuiBackdrop.release();
+								$weuiBackdrop.getElement().removeClass('backdrop-popup');
+
 								$timeout(function() {
 									if (!popupStack.length) {
 										$body.removeClass('ng-weui-popup-open');
@@ -1116,8 +1207,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-toast-wrapper">'+
-						        '<div class="weui-mask_transparent"></div>'+
+			    template: 	'<div class="ng-weui-toast-wrapper hidden">'+
 						        '<div class="weui-toast">'+
 						            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
 						            '<p class="weui-toast__content" ng-bind="text"></p>'+
@@ -1132,11 +1222,12 @@
 	        	type: 'default',
 	        	timer: 1500,
 	        	text: '已完成',
+	        	noBackdrop: true,
 	        	success: angular.noop
 	        }
 
-	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -1162,9 +1253,25 @@
 
 					    $body.append(element);
 
+					    if (!scope.noBackdrop) {
+							$weuiBackdrop.retain();
+							$weuiBackdrop.getElement().addClass('backdrop-toast');
+						}
+
+					    element.addClass('visible');
+						element[0].offsetWidth;
+						element.addClass('active');
+
 					    scope.remove = function(callback) {
 					    	$timeout(function() {
+					    		if (!scope.noBackdrop) {
+									$weuiBackdrop.release();
+									$weuiBackdrop.getElement().removeClass('backdrop-toast');
+								}
+
+								element.removeClass('visible active');
 		        				element.remove();
+		        				scope.$destroy();
 								(callback || noop)();
 		        			}, scope.timer)
 						}
@@ -1213,6 +1320,7 @@
 	angular
 		.module('ng-weui', [
 			'ng-weui-actionsheet', 
+			'ng-weui-backdrop', 
 			'ng-weui-dialog', 
 			'ng-weui-fileUpload', 
 			'ng-weui-gallery', 

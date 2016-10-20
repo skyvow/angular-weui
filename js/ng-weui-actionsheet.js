@@ -51,7 +51,8 @@
 				cancelText: '取消',
 				cancel: angular.noop,
 				// destructiveText: '删除',
-				// destructiveButtonClicked: angular.noop
+				// destructiveButtonClicked: angular.noop,
+				cancelOnStateChange: true
 	        }
 
 	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
@@ -76,6 +77,8 @@
 					    var element = scope.element = $compile('<weui-action-sheet></weui-action-sheet>')(scope);
 					    var sheetEl = $el(element[0].querySelector('.weui-actionsheet'));
 
+					    var stateChangeListenDone = scope.cancelOnStateChange ? $rootScope.$on('$stateChangeSuccess', function() { scope.cancel(); }) : noop;
+
 					    $body.append(element);
 
 					    scope.showSheet = function(callback) {
@@ -90,6 +93,7 @@
 					    	scope.removed = true;
 							sheetEl.removeClass('weui-actionsheet_toggle');
 							element.removeClass('active');
+							stateChangeListenDone();
 							element.on('transitionend', function() {
 								element.remove();
 								scope.cancel.$scope = element = null;

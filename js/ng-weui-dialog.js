@@ -8,7 +8,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-dialog-backdrop">'+
+			    template: 	'<div class="ng-weui-dialog-wrapper hidden">'+
 						        '<div class="weui-dialog">'+
 						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
 						            '<div class="weui-dialog__bd" ng-bind="text"></div>'+
@@ -26,20 +26,12 @@
 						}
 					};
 
-					var backdropClick = function(e) {
-						if (e.target == $element[0]) {
-							$scope.cancel();
-							$scope.$apply();
-						}
-					};
-
 					$scope.$on('$destroy', function() {
 						$element.remove();
 						$document.unbind('keyup', keyUp);
 					});
 
 					$document.bind('keyup', keyUp);
-					$element.bind('click', backdropClick);
 			    }
 			}
 		}])
@@ -55,8 +47,8 @@
 	            confirm: angular.noop
 	        }
 
-	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -80,6 +72,15 @@
 
 					    scope.showDialog = function(callback) {
 					    	if (scope.removed) return;
+					    	$weuiBackdrop.retain();
+					    	var $backdrop = $weuiBackdrop.getElement()
+					    	$backdrop.addClass('backdrop-dialog');
+					    	$backdrop.off().on('click', function(e) {
+					    		if ($backdrop.hasClass('backdrop-dialog')) {
+					    			scope.cancel()
+					    		}
+					    	})
+							element.addClass('visible');
 					    	element[0].offsetWidth;
 							element.addClass('active');
 					    }
@@ -87,9 +88,12 @@
 					    scope.removeDialog = function(callback) {
 					    	if (scope.removed) return;
 					    	scope.removed = true;
+					    	$weuiBackdrop.release()
+					    	$weuiBackdrop.getElement().removeClass('backdrop-dialog')
 							element.removeClass('active');
 							element.on('transitionend', function() {
 								element.remove();
+								scope.$destroy();
 								scope.cancel.$scope = element = null;
 								(callback || noop)();
 							})

@@ -8,7 +8,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-dialog-backdrop" ng-class="className">'+
+			    template: 	'<div class="ng-weui-dialog-wrapper hidden" ng-class="className">'+
 						        '<div class="weui-dialog">'+
 						            '<div class="weui-dialog__hd"><strong class="weui-dialog__title" ng-bind="title"></strong></div>'+
 						            '<div class="weui-dialog__bd"></div>'+
@@ -26,21 +26,12 @@
 						}
 					};
 
-					var backdropClick = function(e) {
-						if (e.target == $element[0]) {
-							var $popup = $element.data('$ngWeuiPopup')
-							$popup.responseDeferred.promise.close();
-							$scope.$apply();
-						}
-					};
-
 					$scope.$on('$destroy', function() {
 						$element.remove();
 						$document.unbind('keyup', keyUp);
 					});
 
 					$document.bind('keyup', keyUp);
-					$element.bind('click', backdropClick);
 			    }
 			}
 		}])
@@ -52,8 +43,8 @@
 	        	okType: 'weui-dialog__btn_primary'
 	        }
 
-	        this.$get = ['$q', '$timeout', '$rootScope', '$compile', '$weuiTemplateLoader', 
-            function ($q, $timeout, $rootScope, $compile, $weuiTemplateLoader) {
+	        this.$get = ['$q', '$timeout', '$rootScope', '$compile', '$weuiTemplateLoader', '$weuiBackdrop', 
+            function ($q, $timeout, $rootScope, $compile, $weuiTemplateLoader, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -66,6 +57,15 @@
 				}
 
 				var popupStack = [];
+
+				var privateMethods = {
+					focusInput: function(element) {
+						var focusOn = element[0].querySelector('[autofocus]');
+						if (focusOn) {
+							focusOn.focus();
+						}
+					}
+				}
 
 	        	var publicMethods = {
 					show        : showPopup,
@@ -127,7 +127,8 @@
 						if (!self.isShown) return;
 						$body.append(self.element);
 						self.element[0].offsetWidth;
-						self.element.addClass('active');
+						self.element.addClass('visible active');
+						privateMethods.focusInput(self.element);
 					};
 
 					self.hide = function(callback) {
@@ -163,6 +164,14 @@
 						$timeout(popupStack[popupStack.length - 1].hide, showDelay, false);
 					} else {
 						$body.addClass('ng-weui-popup-open');
+						$weuiBackdrop.retain();
+				    	var $backdrop = $weuiBackdrop.getElement();
+				    	$backdrop.addClass('backdrop-popup');
+				    	$backdrop.off().on('click', function(e) {
+				    		if ($backdrop.hasClass('backdrop-popup')) {
+				    			popup.responseDeferred.promise.close();
+				    		}
+				    	})
 					}
 
 					popup.responseDeferred.promise.close = function popupClose(result) {
@@ -189,6 +198,9 @@
 							if (popupStack.length > 0) {
 								popupStack[popupStack.length - 1].show();
 							} else {
+								$weuiBackdrop.release();
+								$weuiBackdrop.getElement().removeClass('backdrop-popup');
+
 								$timeout(function() {
 									if (!popupStack.length) {
 										$body.removeClass('ng-weui-popup-open');

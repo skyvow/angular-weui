@@ -8,8 +8,7 @@
 			    restrict: 'E',
 			    scope: true,
 			    replace: true,
-			    template: 	'<div class="ng-weui-toast-wrapper">'+
-						        '<div class="weui-mask_transparent"></div>'+
+			    template: 	'<div class="ng-weui-toast-wrapper hidden">'+
 						        '<div class="weui-toast">'+
 						            '<i class="weui-icon-success-no-circle weui-icon_toast"></i>'+
 						            '<p class="weui-toast__content" ng-bind="text"></p>'+
@@ -24,11 +23,12 @@
 	        	type: 'default',
 	        	timer: 1500,
 	        	text: '已完成',
+	        	noBackdrop: true,
 	        	success: angular.noop
 	        }
 
-	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$injector',
-            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $injector) {
+	        this.$get = ['$document', '$templateCache', '$compile', '$q', '$http', '$rootScope', '$timeout', '$window', '$controller', '$weuiBackdrop',
+            function ($document, $templateCache, $compile, $q, $http, $rootScope, $timeout, $window, $controller, $weuiBackdrop) {
 	        	var self   = this,
 					$el    = angular.element,
 					$body  = $el(document.body),
@@ -54,9 +54,25 @@
 
 					    $body.append(element);
 
+					    if (!scope.noBackdrop) {
+							$weuiBackdrop.retain();
+							$weuiBackdrop.getElement().addClass('backdrop-toast');
+						}
+
+					    element.addClass('visible');
+						element[0].offsetWidth;
+						element.addClass('active');
+
 					    scope.remove = function(callback) {
 					    	$timeout(function() {
+					    		if (!scope.noBackdrop) {
+									$weuiBackdrop.release();
+									$weuiBackdrop.getElement().removeClass('backdrop-toast');
+								}
+
+								element.removeClass('visible active');
 		        				element.remove();
+		        				scope.$destroy();
 								(callback || noop)();
 		        			}, scope.timer)
 						}

@@ -30,6 +30,7 @@ angular
             'actionsheet', 
             'dialog', 
             'popup', 
+            'backdrop', 
             'msg', 
             'msg_success', 
             'msg_warn', 
@@ -64,7 +65,7 @@ angular
         // })
     })
 	
-	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup){
+	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop){
         $scope.panelAppmsg = [
             {
                 image: image,
@@ -104,6 +105,7 @@ angular
                 type: 'default',
                 timer: 1500,
                 text: '已完成',
+                noBackdrop: true,
                 success: function() {
                     console.log('已完成')
                 }
@@ -115,6 +117,7 @@ angular
                 type: 'forbidden',
                 timer: 1500,
                 text: '禁止操作',
+                noBackdrop: true,
                 success: function() {
                     console.log('禁止操作')
                 }
@@ -125,6 +128,7 @@ angular
             $weuiLoading.show({
                 template: '数据加载中',
                 templateUrl: null,
+                noBackdrop: true,
                 hideOnStateChange: false
             })
             $timeout(function() {
@@ -204,7 +208,7 @@ angular
             $scope.data = {}
             $weuiPopup.show({
                 className: 'className',
-                template: '<input class="weui-input" type="password" placeholder="请输入Wi-Fi密码" ng-model="data.wifi">',
+                template: '<input class="weui-input" type="password" placeholder="请输入Wi-Fi密码" ng-model="data.wifi" autofocus>',
                 title: '请输入Wi-Fi密码',
                 scope: $scope,
                 buttons: [
@@ -327,6 +331,18 @@ angular
             // $timeout(function() {
             //     hideGallery();
             // }, 2000);
+        }
+
+        $scope.locks = 0
+
+        $scope.retain = function() {
+            $weuiBackdrop.retain()
+            $scope.locks++
+        }
+        
+        $scope.release = function() {
+            $weuiBackdrop.release()
+            $scope.locks > 0 ? $scope.locks-- : 0
         }
 	})
     .controller('weuiFileReader', function($scope, $weuiGallery, $weuiFileReader){

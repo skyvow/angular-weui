@@ -498,3 +498,13 @@ ul {
 .page__ft {
 	display: none !important;
 }
+
+.ezpop {
+    position: relative;
+    z-index: 1010;
+    margin-bottom: 50px;
+}
+
+.text-center {
+	text-align: center;
+}
