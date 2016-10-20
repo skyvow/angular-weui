@@ -567,6 +567,24 @@
 })(); 
 (function() {
 
+	// ng-weui-icon	
+	angular
+		.module('ng-weui-icon', [])
+		.directive('weuiIcon', function(){
+			return {
+				restrict: 'E',
+				template: '<i></i>',
+				replace: true,
+				link: function($scope, $element, $attrs, ctrl) {
+					var iconName = $attrs.icon || 'success';
+					$element.addClass('weui-icon-' + iconName);
+				}
+  			};
+		})
+	
+})(); 
+(function() {
+
 	// ng-weui-loading	
 	angular
 		.module('ng-weui-loading', [])
@@ -1324,6 +1342,7 @@
 			'ng-weui-dialog', 
 			'ng-weui-fileUpload', 
 			'ng-weui-gallery', 
+			'ng-weui-icon', 
 			'ng-weui-loading', 
 			'ng-weui-msg', 
 			'ng-weui-panel', 

@@ -29,6 +29,7 @@
 			'ng-weui-dialog', 
 			'ng-weui-fileUpload', 
 			'ng-weui-gallery', 
+			'ng-weui-icon', 
 			'ng-weui-loading', 
 			'ng-weui-msg', 
 			'ng-weui-panel', 
