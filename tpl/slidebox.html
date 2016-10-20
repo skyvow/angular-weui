@@ -1,0 +1,17 @@
+<div class="page msg js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Slidebox</h1>
+        <p class="page__desc">轮播图</p>
+    </div>
+    <div class="page__bd page__bd_spacing">
+        <h1 class="text-center">幻灯页：{{index}}</h1>
+       	<weui-slide-box does-continue="true" auto-play="true" slide-interval="4000" show-pager="true" active-slide="index" pager-click="go(index)">
+			<weui-slide ng-repeat="item in [1, 2, 3, 4]">
+				<img src="http://placekitten.com/375/667">
+			</weui-slide>
+		</weui-slide-box>
+    </div>
+    <div class="page__ft j_bottom">
+        <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
+    </div>
+</div>

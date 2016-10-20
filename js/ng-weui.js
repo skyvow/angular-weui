@@ -34,6 +34,7 @@
 			'ng-weui-msg', 
 			'ng-weui-panel', 
 			'ng-weui-popup', 
+			'ng-weui-slideBox', 
 			'ng-weui-templateLoader', 
 			'ng-weui-toast', 
 		])

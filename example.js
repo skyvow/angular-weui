@@ -31,6 +31,7 @@ angular
             'dialog', 
             'popup', 
             'backdrop', 
+            'slidebox', 
             'msg', 
             'msg_success', 
             'msg_warn', 
@@ -65,7 +66,7 @@ angular
         // })
     })
 	
-	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop){
+	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate){
         $scope.panelAppmsg = [
             {
                 image: image,
@@ -318,19 +319,63 @@ angular
 
         $scope.showGallery = function() {
             var hideGallery = $weuiGallery.show({
-                url: 'images/pic_160.png',
+                urls: $scope.images,
                 cancel: function() {
                     console.log('cancel')
                 },
-                delete: function(value) {
-                    console.log(value)
-                    console.log('delete')
-                }
+                delete: function(index, item) {
+                    $scope.images.splice(index, 1)
+                    console.log('delete', item)
+                    return !0
+                },
+                animation: 'fade-in-right'
             })
 
             // $timeout(function() {
             //     hideGallery();
             // }, 2000);
+        }
+
+        $scope.urls = [
+            'http://placekitten.com/375/667', 
+            'http://placekitten.com/750/600', 
+            'http://placekitten.com/300/400',
+            'http://placekitten.com/300/200',
+        ]
+
+        $scope.showGallery2 = function(animation) {
+            $weuiGallery.show({
+                urls: $scope.urls,
+                cancel: function() {
+                    console.log('cancel')
+                },
+                delete: function(index, item) {
+                    $scope.urls.splice(index, 1)
+                    console.log('delete', item)
+                    return !0
+                },
+                animation: animation
+            })
+        }
+
+        $scope.fadeIn = function() {
+            return $scope.showGallery2('fade-in')
+        }
+
+        $scope.fadeInUp = function() {
+            return $scope.showGallery2('fade-in-up')
+        }
+
+        $scope.fadeInRight = function() {
+            return $scope.showGallery2('fade-in-right')
+        }
+
+        $scope.fadeInDown = function() {
+            return $scope.showGallery2('fade-in-down')
+        }
+
+        $scope.fadeInLeft = function() {
+            return $scope.showGallery2('fade-in-left')
         }
 
         $scope.locks = 0
@@ -343,6 +388,12 @@ angular
         $scope.release = function() {
             $weuiBackdrop.release()
             $scope.locks > 0 ? $scope.locks-- : 0
+        }
+
+        $scope.index = 0
+
+        $scope.go = function(index){
+            $weuiSlideBoxDelegate.slide(index)
         }
 	})
     .controller('weuiFileReader', function($scope, $weuiGallery, $weuiFileReader){
@@ -360,15 +411,17 @@ angular
         }
         self.showGallery = function(index, url) {
             $weuiGallery.show({
-                url: url,
+                urls: self.preview,
+                index: index,
                 cancel: function() {
                     console.log('cancel')
                 },
-                delete: function(value) {
+                delete: function(index, item) {
                     self.preview.splice(index, 1)
-                    $scope.$apply()
-                    console.log('delete')
-                }
+                    console.log('delete', item)
+                    return !0
+                },
+                animation: 'fade-in'
             })
         }
     })
@@ -385,15 +438,16 @@ angular
         }
         self.showGallery = function(index, url) {
             $weuiGallery.show({
-                url: url,
+                urls: self.preview,
                 cancel: function() {
                     console.log('cancel')
                 },
-                delete: function(value) {
+                delete: function(index, item) {
                     self.preview.splice(index, 1)
-                    $scope.$apply()
-                    console.log('delete')
-                }
+                    console.log('delete', item)
+                    return !0
+                },
+                animation: 'fade-in-up'
             })
         }
     })
