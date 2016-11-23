@@ -2,22 +2,25 @@ var image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAMAAAAOusbgA
 var icon  = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAVFBMVEXx8fHMzMzr6+vn5+fv7+/t7e3d3d2+vr7W1tbHx8eysrKdnZ3p6enk5OTR0dG7u7u3t7ejo6PY2Njh4eHf39/T09PExMSvr6+goKCqqqqnp6e4uLgcLY/OAAAAnklEQVRIx+3RSRLDIAxE0QYhAbGZPNu5/z0zrXHiqiz5W72FqhqtVuuXAl3iOV7iPV/iSsAqZa9BS7YOmMXnNNX4TWGxRMn3R6SxRNgy0bzXOW8EBO8SAClsPdB3psqlvG+Lw7ONXg/pTld52BjgSSkA3PV2OOemjIDcZQWgVvONw60q7sIpR38EnHPSMDQ4MjDjLPozhAkGrVbr/z0ANjAF4AcbXmYAAAAASUVORK5CYII=';
 var qpic  = 'http://shp.qpic.cn/weixinsrc_pic/pScBR7sbqjOBJomcuvVJ6iacVrbMJaoJZkFUIq4nzQZUIqzTKziam7ibg/';
 
-angular
-	.module('weui', ['ng-weui','ui.router'])
-	.config(function($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider, $weuiPopupProvider, $weuiLoadingProvider) {
-
-    	//set router
-    	$urlRouterProvider.otherwise('/index');
-
-        var tpls = [
+var tpls = {
+    0: {
+        value: '表单',
+        image: 'images/icon_nav_form.png',
+        items: [
             'index', 
             'button', 
             'input', 
             'radio', 
             'checkbox', 
+            'switch', 
             'list', 
             'uploader', 
-
+        ]
+    },
+    1: {
+        value: '基础组件',
+        image: 'images/icon_nav_layout.png',
+        items: [
             'article', 
             'flex', 
             'footer', 
@@ -28,7 +31,12 @@ angular
             'panel', 
             'preview', 
             'progress', 
-
+        ]
+    },
+    2: {
+        value: '操作反馈',
+        image: 'images/icon_nav_feedback.png',
+        items: [
             'actionsheet', 
             'dialog', 
             'popup', 
@@ -39,20 +47,52 @@ angular
             'msg_warn', 
             'toast', 
             'blur', 
-
+        ]
+    },
+    3: {
+        value: '导航相关',
+        image: 'images/icon_nav_nav.png',
+        items: [
             'navbar', 
             'tabbar', 
-
+        ]
+    },
+    4: {
+        value: '搜索相关',
+        image: 'images/icon_nav_search.png',
+        items: [
             'searchbar', 
-            
+        ]
+    },
+    5: {
+        value: '层级规范',
+        image: 'images/icon_nav_z-index.png',
+        items: [
             'layers', 
         ]
+    }
+}
+
+angular
+	.module('weui', [
+        'ng-weui', 
+        'ui.router', 
+        'ngAnimate', 
+    ])
+	.config(function($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider, $weuiPopupProvider, $weuiLoadingProvider) {
+
+    	//set router
+    	$urlRouterProvider.otherwise('/index');
 
         angular.forEach(tpls, function(value, key){
-            $stateProvider.state(value, {
-                url: '/' + value, 
-                templateUrl: 'tpl/' + value + '.html', 
-            })
+            if (angular.isObject(value)) {
+                angular.forEach(value.items, function(n, i){
+                    $stateProvider.state(n, {
+                        url: '/' + n, 
+                        templateUrl: 'tpl/' + n + '.html', 
+                    })
+                })
+            }
         })
 
         // $weuiPopupProvider.setDefaults({
@@ -70,6 +110,15 @@ angular
     })
 	
 	.controller('ExampleCtrl', function($rootScope, $scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate){
+        $scope.tpls = tpls
+        $scope.open = function(item, tpls) {
+            angular.forEach(tpls, function(value, key){
+                if (value.value !== item.value) {
+                    value.isOpen = false
+                }  
+            })
+            item.isOpen = !item.isOpen
+        }
         $scope.panelAppmsg = [
             {
                 image: image,

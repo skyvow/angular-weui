@@ -1,0 +1,17 @@
+<div class="page input js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Switch</h1>
+        <p class="page__desc">switch</p>
+    </div>
+    <div class="page__bd">
+    	<div class="weui-cells__title">开关</div>
+    	<div class="weui-cells weui-cells_form">
+            <weui-switch ng-repeat="item in checkbox" ng-model="item.selected" ng-change="switchChange()">
+				{{ item.label }} : {{ item.selected }}
+			</weui-switch>
+        </div>
+    </div>
+    <div class="page__ft">
+        <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
+    </div>
+</div>

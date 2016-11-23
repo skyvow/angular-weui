@@ -38,6 +38,7 @@
 			'ng-weui-popup', 
 			'ng-weui-radio', 
 			'ng-weui-slideBox', 
+			'ng-weui-switch', 
 			'ng-weui-templateLoader', 
 			'ng-weui-toast', 
 		])

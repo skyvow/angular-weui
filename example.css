@@ -499,6 +499,24 @@ ul {
 	display: none !important;
 }
 
+.view-page {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.view-page.ng-enter {
+	-webkit-animation: a .2s forwards;
+	animation: a .2s forwards
+}
+
+.view-page.ng-leave {
+	-webkit-animation: b .2s forwards;
+	animation: b .2s forwards
+}
+
 .ezpop {
     position: relative;
     z-index: 1010;
