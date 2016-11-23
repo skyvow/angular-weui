@@ -7,15 +7,16 @@
 			return {
 				scope: {
 					title: '@',
+					viewText: '@',
 					viewMore: '&'
 				},
 				restrict: 'AE',
 				template:   '<div class="weui-panel weui-panel_access">'+
-								'<div class="weui-panel__hd" ng-if="!!title" ng-bind="title"></div>'+
+								'<div class="weui-panel__hd" ng-if="title" ng-bind="title"></div>'+
 								'<div class="weui-panel__bd" ng-transclude></div>'+
-								'<div class="weui-panel__ft">'+
-					                '<a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" ng-if="show" ng-click="viewMore()">'+
-					                    '<div class="weui-cell__bd">查看更多</div>'+
+								'<div class="weui-panel__ft" ng-if="show">'+
+					                '<a href="javascript:void(0);" class="weui-cell weui-cell_access weui-cell_link" ng-click="viewMore()">'+
+					                    '<div class="weui-cell__bd" ng-bind="viewText"></div>'+
 					                    '<span class="weui-cell__ft"></span>'+
 					                '</a>'+    
 					            '</div>'+
@@ -23,7 +24,8 @@
 				replace: true,
 				transclude: true,
 				link: function($scope, iElm, iAttrs, controller) {
-					$scope.show = !!iAttrs.viewMore && angular.isFunction($scope.viewMore)
+					$scope.viewText = $scope.viewText || '查看更多';
+					$scope.show = !!iAttrs.viewMore && angular.isFunction($scope.viewMore);
 				}
 			};
 		})
@@ -37,12 +39,12 @@
 				require: '^?weuiPanel',
 				restrict: 'E',
 				template:   '<a href="javascript:void(0);" class="weui-media-box weui-media-box_appmsg">'+
-				                '<div class="weui-media-box__hd" ng-if="!!image">'+
+				                '<div class="weui-media-box__hd" ng-if="image">'+
 				                    '<img class="weui-media-box__thumb" ng-src="{{image}}" alt="">'+
 				                '</div>'+
 				                '<div class="weui-media-box__bd">'+
-				                    '<h4 class="weui-media-box__title" ng-bind="title"></h4>'+
-				                    '<p class="weui-media-box__desc" ng-bind="desc"></p>'+
+				                    '<h4 class="weui-media-box__title" ng-if="title" ng-bind="title"></h4>'+
+				                    '<p class="weui-media-box__desc" ng-if="desc" ng-bind="desc"></p>'+
 				                '</div>'+
 				            '</a>',
 				replace: true
@@ -51,15 +53,14 @@
 		.directive('panelText', function(){
 			return {
 				scope: {
-					image: '=',
 					title: '=',
 					desc: '='
 				},
 				require: '^?weuiPanel',
 				restrict: 'E',
 				template:   '<div class="weui-media-box weui-media-box_text">'+
-				                '<h4 class="weui-media-box__title" ng-bind="title"></h4>'+
-				                '<p class="weui-media-box__desc" ng-bind="desc"></p>'+
+				                '<h4 class="weui-media-box__title" ng-if="title" ng-bind="title"></h4>'+
+				                '<p class="weui-media-box__desc" ng-if="desc" ng-bind="desc"></p>'+
 				                '<div ng-transclude></div>'+
 				            '</div>',
 				replace: true,
@@ -73,7 +74,7 @@
 				},
 				restrict: 'AE',
 				template:   '<div class="weui-panel">'+
-								'<div class="weui-panel__hd" ng-if="!!title" ng-bind="title"></div>'+
+								'<div class="weui-panel__hd" ng-if="title" ng-bind="title"></div>'+
 								'<div class="weui-panel__bd">'+
 									'<div class="weui-media-box weui-media-box_small-appmsg">'+
 						                '<div class="weui-cells" ng-transclude>'+
@@ -94,7 +95,9 @@
 				require: '^?weuiPanelSm',
 				restrict: 'E',
 				template:   '<a class="weui-cell weui-cell_access" href="javascript:;">'+
-		                        '<div class="weui-cell__hd" ng-if="!!image"><img ng-src="{{image}}" alt="" style="width:20px;margin-right:5px;display:block"></div>'+
+		                        '<div class="weui-cell__hd" ng-if="image">'+
+		                        	'<img ng-src="{{image}}" alt="" style="width:20px;margin-right:5px;display:block">'+
+		                        '</div>'+
 		                        '<div class="weui-cell__bd weui-cell_primary">'+
 		                            '<p ng-bind="title"></p>'+
 		                        '</div>'+
