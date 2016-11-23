@@ -32,6 +32,13 @@
     display: none;
 }
 
+.weui-actionsheet .weui-actionsheet__cell.action-sheet-title {
+    padding: 16px;
+    color: #8f8f8f;
+    text-align: center;
+    font-size: 13px;
+}
+
 .weui-actionsheet .weui-actionsheet__cell.destructive, 
 .weui-actionsheet .weui-actionsheet__cell.destructive:hover {
     color: #ff3b30;

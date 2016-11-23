@@ -298,6 +298,7 @@ angular
 
         $scope.showActionSheet = function() {
             var hideSheet = $weuiActionSheet.show({
+                titleText: '操作提示',
                 buttons: [
                     {
                         text: '示例菜单',

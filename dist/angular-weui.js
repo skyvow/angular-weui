@@ -11,6 +11,7 @@
 			    template: 	'<div class="ng-weui-action-sheet-backdrop">'+
         						'<div class="weui-actionsheet">'+
 					                '<div class="weui-actionsheet__menu">'+
+					                	'<div class="weui-actionsheet__cell action-sheet-title" ng-if="titleText" ng-bind="titleText"></div>'+
 					                	'<div class="weui-actionsheet__cell" ng-click="buttonClicked($index)" ng-repeat="b in buttons" ng-class="b.className" ng-bind="b.text"></div>'+
 					                	'<div class="weui-actionsheet__cell destructive action-sheet-destructive" ng-if="destructiveText" ng-click="destructiveButtonClicked()" ng-bind="destructiveText"></div>'+
 					                '</div>'+
@@ -46,6 +47,7 @@
 		}])
 		.provider('$weuiActionSheet', function () {
 	        var defaults = this.defaults = {
+	        	titleText: undefined,
 				buttons: [],
 				buttonClicked: angular.noop,
 				cancelText: '取消',
