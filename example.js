@@ -104,12 +104,24 @@ angular
 
         $scope.showToast = function() {
             $weuiToast.show({
-                type: 'default',
+                type: 'success',
                 timer: 1500,
                 text: '已完成',
                 noBackdrop: true,
                 success: function() {
                     console.log('已完成')
+                }
+            })
+        }
+
+        $scope.showToastCancel = function() {
+            $weuiToast.show({
+                type: 'cancel',
+                timer: 1500,
+                text: '取消操作',
+                noBackdrop: true,
+                success: function() {
+                    console.log('取消操作')
                 }
             })
         }
@@ -122,6 +134,18 @@ angular
                 noBackdrop: true,
                 success: function() {
                     console.log('禁止操作')
+                }
+            })
+        }
+
+        $scope.showToastText = function() {
+            $weuiToast.show({
+                type: 'text',
+                timer: 1500,
+                text: '服务器发生了未知错误',
+                noBackdrop: true,
+                success: function() {
+                    console.log('文本操作')
                 }
             })
         }

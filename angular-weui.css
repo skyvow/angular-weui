@@ -1,3 +1,13 @@
+.weui-toast {
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    margin-left: 0!important;
+}
+
+.ng-weui-toast-cancel .weui-icon_toast:before {
+    content: "\EA0D";
+}
+
 .ng-weui-toast-forbidden .weui-toast {
 	color: #F76260;
 }
@@ -5,6 +15,21 @@
 .ng-weui-toast-forbidden .weui-icon_toast:before {
 	content: "\EA0B";
 	color: #F76260;
+}
+
+.ng-weui-toast-text .weui-toast {
+    width: 12em;
+    min-height: 0;
+    padding: 20px;
+    text-overflow: ellipsis;
+}
+
+.ng-weui-toast-text .weui-toast__content {
+    margin: 0;
+}
+
+.ng-weui-toast-text .weui-icon_toast {
+    display: none;
 }
 
 .weui-actionsheet .weui-actionsheet__cell.destructive, 

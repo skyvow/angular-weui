@@ -19,8 +19,27 @@
 			}
 		}])
 		.provider('$weuiToast', function () {
+			var TOAST_TYPES = [
+				{
+					type: 'success',
+					cls: 'ng-weui-toast-success'
+				},
+				{
+					type: 'cancel',
+					cls: 'ng-weui-toast-cancel'
+				},
+				{
+					type: 'forbidden',
+					cls: 'ng-weui-toast-forbidden'
+				},
+				{
+					type: 'text',
+					cls: 'ng-weui-toast-text'
+				}
+			]
+
 	        var defaults = this.defaults = {
-	        	type: 'default',
+	        	type: 'success',
 	        	timer: 1500,
 	        	text: '已完成',
 	        	noBackdrop: true,
@@ -48,9 +67,11 @@
 
 					    var element = scope.element = $compile('<weui-toast></weui-toast>')(scope);
 
-					    if(scope.type == 'forbidden') {
-	        				element.addClass('ng-weui-toast-forbidden');
-	        			}
+	        			angular.forEach(TOAST_TYPES, function(value, key){
+	        				if (value.type === scope.type) {
+	        					element.addClass(value.cls)
+	        				}
+	        			})
 
 					    $body.append(element);
 
