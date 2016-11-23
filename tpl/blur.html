@@ -1,0 +1,24 @@
+<div class="page toast js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Blur</h1>
+        <p class="page__desc">background-blur</p>
+    </div>
+    <div class="page__bd">
+        <weui-blur class="weui-holder" 
+        url="{{ current }}" 
+        blur-amount="50" 
+        image-class="weui-bg-blur" 
+        overlay-class="weui-bg-overlay" 
+        duration="100" 
+        opacity="1" >
+        	<div class="weui-center">
+        		<img ng-src="{{ current }}">
+        	</div>
+        </weui-blur>
+        <div class="weui-flex">
+            <div class="weui-flex__item" ng-repeat="item in items" ng-click="url(item)">
+            	<img style="width:100%" ng-src="{{ item }}">
+            </div>
+        </div>
+    </div>
+</div>

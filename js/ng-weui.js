@@ -26,6 +26,7 @@
 		.module('ng-weui', [
 			'ng-weui-actionsheet', 
 			'ng-weui-backdrop', 
+			'ng-weui-blur', 
 			'ng-weui-dialog', 
 			'ng-weui-fileUpload', 
 			'ng-weui-gallery', 

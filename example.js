@@ -36,6 +36,7 @@ angular
             'msg_success', 
             'msg_warn', 
             'toast', 
+            'blur', 
 
             'navbar', 
             'tabbar', 
@@ -66,7 +67,7 @@ angular
         // })
     })
 	
-	.controller('ExampleCtrl', function($scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate){
+	.controller('ExampleCtrl', function($rootScope, $scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate){
         $scope.panelAppmsg = [
             {
                 image: image,
@@ -394,6 +395,24 @@ angular
 
         $scope.go = function(index){
             $weuiSlideBoxDelegate.slide(index)
+        }
+
+        $rootScope.$on('weui-blur', function(event, data) {
+            console.log(data)
+            $scope.blur = data
+        })
+
+        $scope.items = [
+            'https://o3e85j0cv.qnssl.com/tulips-1083572__340.jpg',
+            'https://o3e85j0cv.qnssl.com/waterway-107810__340.jpg',
+            'https://o3e85j0cv.qnssl.com/hot-chocolate-1068703__340.jpg',
+        ]
+
+        $scope.current = $scope.items[0]
+
+        $scope.url = function(url) {
+            $scope.blur.generateBlurredImage(url)
+            $scope.current = url
         }
 	})
     .controller('weuiFileReader', function($scope, $weuiGallery, $weuiFileReader){
