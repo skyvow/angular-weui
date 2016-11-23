@@ -2,13 +2,39 @@
     <div class="page__hd">
         <h1 class="page__title">Switch</h1>
         <p class="page__desc">switch</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd">
     	<div class="weui-cells__title">开关</div>
     	<div class="weui-cells weui-cells_form">
-            <weui-switch ng-repeat="item in checkbox" ng-model="item.selected" ng-change="switchChange()">
+            <weui-switch ng-repeat="item in checkbox" ng-model="item.selected" ng-change="checkboxChange()">
 				{{ item.label }} : {{ item.selected }}
 			</weui-switch>
+        </div>
+        <blockquote ng-if="showCode">HTML</blockquote>
+        <div hljs ng-if="showCode">
+<weui-switch ng-repeat="item in checkbox" ng-model="item.selected" ng-change="checkboxChange()">
+    {{ item.label }} : {{ item.selected }}
+</weui-switch>
+        </div>
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.checkbox = [
+    {
+        label:'HTML5',
+        selected:true
+    },
+    {
+        label:'CSS3'
+    },
+    {
+        label:'ECMAScript6'
+    }
+]
+
+$scope.checkboxChange = function() {
+    console.log($scope.checkbox)
+}
         </div>
     </div>
     <div class="page__ft">

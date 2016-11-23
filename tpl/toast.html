@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Toast</h1>
         <p class="page__desc">弹出式提示</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToast()">成功提示</a>
@@ -10,26 +11,71 @@
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToastText()">文本提示</a>
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showLoadingToast()">加载中提示</a>
     </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.showToast = function() {
+    $weuiToast.show({
+        type: 'success',
+        timer: 1500,
+        text: '已完成',
+        noBackdrop: true,
+        success: function() {
+            console.log('已完成')
+        }
+    })
+}
+
+$scope.showToastCancel = function() {
+    $weuiToast.show({
+        type: 'cancel',
+        timer: 1500,
+        text: '取消操作',
+        noBackdrop: true,
+        success: function() {
+            console.log('取消操作')
+        }
+    })
+}
+
+$scope.showToastErr = function() {
+    $weuiToast.show({
+        type: 'forbidden',
+        timer: 1500,
+        text: '禁止操作',
+        noBackdrop: true,
+        success: function() {
+            console.log('禁止操作')
+        }
+    })
+}
+
+$scope.showToastText = function() {
+    $weuiToast.show({
+        type: 'text',
+        timer: 1500,
+        text: '服务器发生了未知错误',
+        noBackdrop: true,
+        success: function() {
+            console.log('文本操作')
+        }
+    })
+}
+
+$scope.showLoadingToast = function() {
+    $weuiLoading.show({
+        template: '数据加载中',
+        templateUrl: null,
+        noBackdrop: true,
+        hideOnStateChange: false
+    })
+    $timeout(function() {
+        $weuiLoading.hide()
+    }, 1500)
+}
+        </div>
+    </div>
     <div class="page__ft j_bottom">
         <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
-    </div>
-
-    <!--BEGIN toast-->
-    <div id="toast" style="display: none;">
-        <div class="weui-mask_transparent"></div>
-        <div class="weui-toast">
-            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
-            <p class="weui-toast__content">已完成</p>
-        </div>
-    </div>
-    <!--end toast-->
-
-    <!-- loading toast -->
-    <div ng-show="loadingToast">
-        <div class="weui-mask_transparent"></div>
-        <div class="weui-toast">
-            <i class="weui-loading weui-icon_toast"></i>
-            <p class="weui-toast__content">数据加载中</p>
-        </div>
     </div>
 </div>

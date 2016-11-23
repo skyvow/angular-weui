@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Radio</h1>
         <p class="page__desc">radio</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd">
     	<div class="weui-cells__title">单选列表项</div>
@@ -10,6 +11,30 @@
 				{{ item }}
 			</weui-radio>
 		</weui-radio-group>
+        <blockquote ng-if="showCode">HTML</blockquote>
+        <div hljs ng-if="showCode">
+<weui-radio-group view-more="addRadio()">
+    <weui-radio ng-repeat="item in radio" ng-model="ret.choice" ng-value="item" ng-change="radioChange()">
+        {{ item }}
+    </weui-radio>
+</weui-radio-group>
+        </div>
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.radio =['HTML5','ES6','CSS3']
+
+$scope.ret = {
+    choice:'CSS3'
+}
+
+$scope.radioChange = function() {
+    console.log($scope.ret)
+}
+
+$scope.addRadio = function() {
+    $scope.radio.push('示例' + $scope.radio.length)
+}
+        </div>
     </div>
     <div class="page__ft">
         <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>

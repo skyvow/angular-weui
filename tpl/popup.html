@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Popup</h1>
         <p class="page__desc">弹出框</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showPopupTpl()">showPopupTpl</a>
@@ -9,6 +10,145 @@
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showAlert()">showAlert</a>
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showConfirm()">showConfirm</a>
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showPrompt()">showPrompt</a>
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.showPopupTpl = function() {
+    var hidePopup = $weuiPopup.show({
+        className: 'className',
+        templateUrl: 'tpl/common.html',
+        title: '延迟3秒后自动关闭',
+        scope: $scope,
+        buttons: [
+            { 
+                text: '取消', 
+                onTap: function(e) {
+                    console.log('cancel')
+                }
+            },
+            {
+                text: '确定',
+                type: 'weui-dialog__btn_primary',
+                onTap: function(e) {
+                    console.log('confirm')
+                }
+            }
+        ]
+    })
+
+    hidePopup.then(function(res) {
+        console.log(res) 
+    })
+
+    $timeout(function() {
+        hidePopup.close()
+    }, 3000)
+}
+
+$scope.showPopup = function() {
+    $scope.data = {}
+    $weuiPopup.show({
+        className: 'className',
+        template: '<input class="weui-input" type="password" placeholder="请输入Wi-Fi密码" ng-model="data.wifi" autofocus>',
+        title: '请输入Wi-Fi密码',
+        scope: $scope,
+        buttons: [
+            { 
+                text: '取消', 
+                onTap: function(e) {
+                    console.log('cancel')
+                }
+            },
+            {
+                text: '确定',
+                type: 'weui-dialog__btn_primary',
+                onTap: function(e) {
+                    console.log('confirm')
+                    return $scope.data.wifi
+                }
+            }
+        ]
+    })
+    .then(function(res) {
+        console.log('Wi-Fi密码到手了:', res)  
+    })
+}
+
+$scope.showAlert = function() {
+    $weuiPopup.alert({
+        title: '不要吃果冻',
+        template: '它们可能是用旧的皮鞋帮做的！'
+    })
+    .then(function(res) {
+        console.log('感谢上帝，你没吃鞋帮！')
+    })
+}
+
+$scope.showConfirm = function() {
+    $weuiPopup.confirm({
+        title: '定制冰激凌',
+        template: '你确定要吃我的冰淇淋吗？'
+    })
+    .then(function(res) {
+        if(res) {
+            console.log('凭什么吃我的冰淇淋！')
+        } else {
+            console.log('谢谢你不吃之恩！')
+        }
+    })
+}
+
+$scope.showPrompt = function() {
+    $weuiPopup.prompt({
+        title: '请输入你的姓名',
+        inputType: 'text',
+        defaultText: '',
+        inputPlaceholder: '请输入你的姓名',
+        maxLength: 20,
+    })
+    .then(function(res) {
+        console.log(res)
+    })
+}
+
+$scope.showActionSheet = function() {
+    var hideSheet = $weuiActionSheet.show({
+        titleText: '操作提示',
+        buttons: [
+            {
+                text: '示例菜单',
+                className: 'red'
+            },
+            {
+                text: '示例菜单',
+                className: 'red'
+            },
+            {
+                text: '示例菜单',
+                className: 'red'
+            }
+        ],
+        buttonClicked: function(index, value) {
+            console.log(index, value)
+            return !0
+        },
+        cancelText: '取消',
+        cancel: function() {
+            console.log('取消')
+        },
+        destructiveText: '删除',
+        destructiveButtonClicked: function(){
+            console.log('删除')
+            return !0
+        }
+    })
+
+    // $timeout(function() {
+    //     hideSheet();
+    // }, 2000);
+}
+        </div>
     </div>
     <div class="page__ft j_bottom">
         <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>

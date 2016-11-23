@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Icons</h1>
         <p class="page__desc">图标</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
         <div class="icon-box">
@@ -48,6 +49,19 @@
             <weui-icon icon="info-circle"></weui-icon>
             <weui-icon icon="cancel"></weui-icon>
             <weui-icon icon="search"></weui-icon>
+        </div>
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">HTML</blockquote>
+        <div hljs ng-if="showCode">
+<weui-icon icon="success"></weui-icon>
+<weui-icon icon="success-no-circle"></weui-icon>
+<weui-icon icon="circle"></weui-icon>
+<weui-icon icon="warn"></weui-icon>
+<weui-icon icon="download"></weui-icon>
+<weui-icon icon="info-circle"></weui-icon>
+<weui-icon icon="cancel"></weui-icon>
+<weui-icon icon="search"></weui-icon>
         </div>
     </div>
     <div class="page__ft">

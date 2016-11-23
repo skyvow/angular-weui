@@ -517,6 +517,48 @@ ul {
 	animation: b .2s forwards
 }
 
+div[hljs] + blockquote {
+	margin-top: 0;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 1.17647059em 0 0;
+    font-size: 17.5px;
+    border-left: 5px solid #586c94;
+    background: #fff;
+}
+
+code, pre {
+    font-family: Consolas, "Liberation Mono", Courier, monospace;
+}
+
+pre {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+pre {
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px;
+    margin-bottom: 0;
+    word-break: normal;
+    word-wrap: normal;
+}
+
+.code_link {
+	display: block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    color: #586c94;
+    font-size: 14px;
+}
+
 .ezpop {
     position: relative;
     z-index: 1010;

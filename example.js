@@ -78,6 +78,7 @@ angular
         'ng-weui', 
         'ui.router', 
         'ngAnimate', 
+        'hljs', 
     ])
 	.config(function($stateProvider, $urlRouterProvider, $httpProvider, $locationProvider, $weuiPopupProvider, $weuiLoadingProvider) {
 

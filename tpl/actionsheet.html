@@ -1,11 +1,53 @@
-<div class="page actionsheet js_show">
+<div class="page js_show">
     <div class="page__hd">
         <h1 class="page__title">ActionSheet</h1>
         <p class="page__desc">弹出式菜单</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showActionSheet()">iOS ActionSheet</a>
         <!-- <a href="javascript:;" class="weui-btn weui-btn_default" id="showAndroidActionSheet">Android ActionSheet</a> -->
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.showActionSheet = function() {
+    var hideSheet = $weuiActionSheet.show({
+        titleText: '操作提示',
+        buttons: [
+            {
+                text: '示例菜单',
+                className: 'red'
+            },
+            {
+                text: '示例菜单',
+                className: 'red'
+            },
+            {
+                text: '示例菜单',
+                className: 'red'
+            }
+        ],
+        buttonClicked: function(index, value) {
+            console.log(index, value)
+            return !0
+        },
+        cancelText: '取消',
+        cancel: function() {
+            console.log('取消')
+        },
+        destructiveText: '删除',
+        destructiveButtonClicked: function(){
+            console.log('删除')
+            return !0
+        }
+    })
+
+    // $timeout(function() {
+    //     hideSheet();
+    // }, 2000);
+}
+        </div>
     </div>
     <!--BEGIN actionSheet-->
     <div>

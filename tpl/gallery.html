@@ -1,7 +1,8 @@
-<div class="page gallery js_show">
+<div class="page js_show">
     <div class="page__hd">
         <h1 class="page__title">Gallery</h1>
         <p class="page__desc">画廊，可实现上传图片的展示或幻灯片播放</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="fadeIn()">fadeIn</a>
@@ -10,12 +11,50 @@
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="fadeInDown()">fadeInDown</a>
         <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="fadeInLeft()">fadeInLeft</a>
     </div>
-    <!-- <div class="weui-gallery" style="display: block">
-        <span class="weui-gallery__img" style="background-image: url(images/pic_article.png);"></span>
-        <div class="weui-gallery__opr">
-            <a href="javascript:" class="weui-gallery__del">
-                <i class="weui-icon-delete weui-icon_gallery-delete"></i>
-            </a>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.urls = [
+    'http://placekitten.com/375/667', 
+    'http://placekitten.com/750/600', 
+    'http://placekitten.com/300/400',
+    'http://placekitten.com/300/200',
+]
+
+$scope.showGallery2 = function(animation) {
+    $weuiGallery.show({
+        urls: $scope.urls,
+        cancel: function() {
+            console.log('cancel')
+        },
+        delete: function(index, item) {
+            $scope.urls.splice(index, 1)
+            console.log('delete', item)
+            return !0
+        },
+        animation: animation
+    })
+}
+
+$scope.fadeIn = function() {
+    return $scope.showGallery2('fade-in')
+}
+
+$scope.fadeInUp = function() {
+    return $scope.showGallery2('fade-in-up')
+}
+
+$scope.fadeInRight = function() {
+    return $scope.showGallery2('fade-in-right')
+}
+
+$scope.fadeInDown = function() {
+    return $scope.showGallery2('fade-in-down')
+}
+
+$scope.fadeInLeft = function() {
+    return $scope.showGallery2('fade-in-left')
+}
         </div>
-    </div> -->
+    </div>
 </div>

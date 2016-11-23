@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Blur</h1>
         <p class="page__desc">background-blur</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd">
         <weui-blur class="weui-holder" 
@@ -19,6 +20,47 @@
             <div class="weui-flex__item" ng-repeat="item in items" ng-click="url(item)">
             	<img style="width:100%" ng-src="{{ item }}">
             </div>
+        </div>
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">HTML</blockquote>
+        <div hljs ng-if="showCode">
+<weui-blur class="weui-holder" 
+url="{{ current }}" 
+blur-amount="50" 
+image-class="weui-bg-blur" 
+overlay-class="weui-bg-overlay" 
+duration="100" 
+opacity="1" >
+    <div class="weui-center">
+        <img ng-src="{{ current }}">
+    </div>
+</weui-blur>
+<div class="weui-flex">
+    <div class="weui-flex__item" ng-repeat="item in items" ng-click="url(item)">
+        <img style="width:100%" ng-src="{{ item }}">
+    </div>
+</div>
+        </div>
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$rootScope.$on('weui-blur', function(event, data) {
+    console.log(data)
+    $scope.blur = data
+})
+
+$scope.items = [
+    'https://o3e85j0cv.qnssl.com/tulips-1083572__340.jpg',
+    'https://o3e85j0cv.qnssl.com/waterway-107810__340.jpg',
+    'https://o3e85j0cv.qnssl.com/hot-chocolate-1068703__340.jpg',
+]
+
+$scope.current = $scope.items[0]
+
+$scope.url = function(url) {
+    $scope.blur.generateBlurredImage(url)
+    $scope.current = url
+}
         </div>
     </div>
 </div>

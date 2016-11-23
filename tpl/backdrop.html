@@ -2,6 +2,7 @@
     <div class="page__hd">
         <h1 class="page__title">Backdrop</h1>
         <p class="page__desc">背景幕</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
     </div>
     <div class="page__bd page__bd_spacing">
     	<div class="ezpop">
@@ -9,6 +10,22 @@
 	        <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="release()">释放背景幕 release</a>
         </div>
         <h1 class="text-center">背景幕锁：{{locks}}</h1>
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.locks = 0
+
+$scope.retain = function() {
+    $weuiBackdrop.retain()
+    $scope.locks++
+}
+
+$scope.release = function() {
+    $weuiBackdrop.release()
+    $scope.locks > 0 ? $scope.locks-- : 0
+}
+        </div>
     </div>
     <div class="page__ft">
         <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
