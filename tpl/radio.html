@@ -1,0 +1,17 @@
+<div class="page input js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Radio</h1>
+        <p class="page__desc">radio</p>
+    </div>
+    <div class="page__bd">
+    	<div class="weui-cells__title">单选列表项</div>
+        <weui-radio-group view-more="addRadio()">
+		    <weui-radio ng-repeat="item in radio" ng-model="ret.choice" ng-value="item" ng-change="radioChange()">
+				{{ item }}
+			</weui-radio>
+		</weui-radio-group>
+    </div>
+    <div class="page__ft">
+        <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
+    </div>
+</div>

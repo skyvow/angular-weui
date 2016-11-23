@@ -13,6 +13,8 @@ angular
             'index', 
             'button', 
             'input', 
+            'radio', 
+            'checkbox', 
             'list', 
             'uploader', 
 
@@ -438,6 +440,43 @@ angular
         $scope.url = function(url) {
             $scope.blur.generateBlurredImage(url)
             $scope.current = url
+        }
+
+        $scope.radio =['HTML5','ES6','CSS3']
+
+        $scope.ret = {
+            choice:'CSS3'
+        }
+
+        $scope.radioChange = function() {
+            console.log($scope.ret)
+        }
+
+        $scope.addRadio = function() {
+            $scope.radio.push('示例' + $scope.radio.length)
+        }
+
+        $scope.checkbox = [
+            {
+                label:'HTML5',
+                selected:true
+            },
+            {
+                label:'CSS3'
+            },
+            {
+                label:'ECMAScript6'
+            }
+        ]
+
+        $scope.checkboxChange = function() {
+            console.log($scope.checkbox)
+        }
+
+        $scope.addCheckbox = function() {
+            $scope.checkbox.push({
+                label: '示例' + $scope.checkbox.length
+            })
         }
 	})
     .controller('weuiFileReader', function($scope, $weuiGallery, $weuiFileReader){
