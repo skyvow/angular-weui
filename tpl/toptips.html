@@ -1,0 +1,69 @@
+<div class="page button js_show">
+    <div class="page__hd">
+        <h1 class="page__title">Toptips</h1>
+        <p class="page__desc">顶部提示</p>
+        <a class="code_link" ng-click="showCode=!showCode">{{ showCode ? 'Hide Code' : 'Show Code' }}</a>
+    </div>
+    <div class="page__bd page__bd_spacing">
+        <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToptips(true)">Show Toptips</a>
+        <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToptips_success(true)">Success Toptips</a>
+        <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToptips_info(true)">Info Toptips</a>
+        <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToptips_warn(true)">Warn Toptips</a>
+        <a href="javascript:;" class="weui-btn weui-btn_default" ng-click="showToptips_error(true)">Error Toptips</a>
+
+        <div class="button-sp-area">
+            <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="showToptips(false)">Show Toptips</a>
+            <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="showToptips_success(false)">Success Toptips</a>
+            <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="showToptips_info(false)">Info Toptips</a>
+            <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="showToptips_warn(false)">Warn Toptips</a>
+            <a href="javascript:;" class="weui-btn weui-btn_primary" ng-click="showToptips_error(false)">Error Toptips</a>
+        </div>
+    </div>
+    <div class="page__bd" style="padding: 0;">
+        <blockquote ng-if="showCode">JavaScript</blockquote>
+        <div hljs ng-if="showCode">
+$scope.showToptips = function() {
+    $weuiToptips.show({
+        text: '请填写正确的字段',
+        hidden: false,
+        timer: 1500,
+        className: 'custom-classname',
+        success(): function(){ 
+            console.log('close')
+        }
+    })
+}
+
+$scope.showToptips_success = function() {
+    $weuiToptips.success({
+        text: 'success',
+        hidden: false
+    })
+}
+
+$scope.showToptips_info = function() {
+    $weuiToptips.info({
+        text: 'info',
+        hidden: false
+    })
+}
+
+$scope.showToptips_warn = function() {
+    $weuiToptips.warn({
+        text: 'warn',
+        hidden: false
+    })
+}
+
+$scope.showToptips_error = function() {
+    $weuiToptips.error({
+        text: 'error',
+        hidden: false
+    })
+}
+        </div>
+    </div>
+    <div class="page__ft">
+        <a href="javascript:home()"><img src="images/icon_footer_link.png"></a>
+    </div>
+</div>

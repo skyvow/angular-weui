@@ -41,6 +41,7 @@
 			'ng-weui-switch', 
 			'ng-weui-templateLoader', 
 			'ng-weui-toast', 
+			'ng-weui-toptips', 
 		])
 
 })();

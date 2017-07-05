@@ -261,3 +261,43 @@
     -webkit-transition: all ease-in-out 250ms;
     transition: all ease-in-out 250ms;
 }
+
+.ng-weui-toptips-wrapper.hidden {
+    visibility: hidden;
+}
+
+.ng-weui-toptips-wrapper.visible {
+    visibility: visible;
+}
+
+.ng-weui-toptips-wrapper.visible .weui-toptips {
+    display: block;
+    opacity: 0;
+    -webkit-transition: opacity .3s;
+    transition: opacity .3s;
+}
+
+.ng-weui-toptips-wrapper.active .weui-toptips {
+    opacity: 1;
+}
+
+.ng-weui-toptips-wrapper .weui-toptips_success {
+    background-color: #09bb08;
+}
+
+.ng-weui-toptips-wrapper .weui-toptips_info {
+    background-color: #10aefe;
+}
+
+.ng-weui-toptips-wrapper .weui-toptips_warn {
+    background-color: #ffbe00;
+}
+
+.ng-weui-toptips-wrapper .weui-toptips_cancel {
+    background-color: #E64340;
+}
+
+.ng-weui-toptips-wrapper .weui-toptips_icon {
+    float: left;
+    color: #fff;
+}

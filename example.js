@@ -47,6 +47,7 @@ var tpls = {
             'msg_warn', 
             'toast', 
             'blur', 
+            'toptips', 
         ]
     },
     3: {
@@ -110,7 +111,7 @@ angular
         // })
     })
 	
-	.controller('ExampleCtrl', function($rootScope, $scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate){
+	.controller('ExampleCtrl', function($rootScope, $scope, $timeout, $state, $weuiToast, $weuiLoading, $weuiActionSheet, $weuiGallery, $weuiFileReader, $weuiDialog, $weuiPopup, $weuiBackdrop, $weuiSlideBoxDelegate, $weuiToptips){
         $scope.tpls = tpls
         $scope.open = function(item, tpls) {
             angular.forEach(tpls, function(value, key){
@@ -526,6 +527,47 @@ angular
         $scope.addCheckbox = function() {
             $scope.checkbox.push({
                 label: '示例' + $scope.checkbox.length
+            })
+        }
+
+        $scope.showToptips = function() {
+            $weuiToptips.show({
+                text: '请填写正确的字段',
+                icon: 'cancel',
+                hidden: false,
+                timer: 1500,
+                className: 'custom-classname',
+                success: function(){ 
+                    console.log('close')
+                }
+            })
+        }
+
+        $scope.showToptips_success = function() {
+            $weuiToptips.success({
+                text: 'success',
+                hidden: false
+            })
+        }
+
+        $scope.showToptips_info = function() {
+            $weuiToptips.info({
+                text: 'info',
+                hidden: false
+            })
+        }
+
+        $scope.showToptips_warn = function() {
+            $weuiToptips.warn({
+                text: 'warn',
+                hidden: false
+            })
+        }
+
+        $scope.showToptips_error = function() {
+            $weuiToptips.error({
+                text: 'error',
+                hidden: false
             })
         }
 	})
