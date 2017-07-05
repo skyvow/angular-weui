@@ -6,11 +6,18 @@
 		.directive('weuiIcon', function(){
 			return {
 				restrict: 'E',
-				template: '<i></i>',
+				template: '<i ng-style="iconStyle"></i>',
 				replace: true,
 				link: function($scope, $element, $attrs, ctrl) {
-					var iconName = $attrs.icon || 'success';
-					$element.addClass('weui-icon-' + iconName);
+					var iconCls = 'weui-icon-' + ($attrs.type || 'success');
+					var iconStyle = {}
+					if($attrs.size) {
+						iconStyle['font-size'] = ($attrs.size || 23) + 'px';
+					}
+					if($attrs.color) {
+						iconStyle['color'] = $attrs.color;
+					}
+					$element.addClass(iconCls).css(iconStyle);
 				}
   			};
 		})

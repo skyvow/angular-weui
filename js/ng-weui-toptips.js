@@ -10,7 +10,7 @@
 			    replace: true,
 			    template: 	'<div class="ng-weui-toptips-wrapper hidden" ng-class="className">'+
 						        '<div class="weui-toptips" ng-class="cls">'+
-						            '<weui-icon class="weui-toptips_icon" icon="{{icon}}" ng-if="!hidden"></weui-icon>'+
+						            '<weui-icon class="weui-toptips_icon" type="{{icon}}" ng-if="!hidden"></weui-icon>'+
 						            '<span ng-bind="text"></span>'+
 						        '</div>'+
 						    '</div>',
