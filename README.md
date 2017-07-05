@@ -31,6 +31,8 @@
 
 - [Toast - 弹出式提示](https://skyvow.github.io/angular-weui/#/toast)
 
+- [Toptips - 顶部提示](https://skyvow.github.io/angular-weui/#/toptips)
+
 - [Uploader - 上传组件](https://skyvow.github.io/angular-weui/#/uploader)
 
 ##	贡献
